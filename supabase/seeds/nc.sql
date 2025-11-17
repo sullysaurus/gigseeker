@@ -162,7 +162,7 @@ VALUES
 
  
 
-  ('Bull City Ciderworks', 'Durham.Taproom@BullCityCiderworks.com', '919-237-2357', 'https://bullcityciderworks.com', '305 S Roxboro Street', 'Durham', 'NC', '27701', 'USA', 'Cidery taproom hosting regular events and live music throughout the year.', 150, ARRAY['Folk', 'Indie', 'Acoustic'], 'Winery', 'Check Facebook and Instagram for event updates.', NULL, NULL, false, now(), now()),
+  ('Bull City Ciderworks', 'Durham.Taproom@BullCityCiderworks.com', '919-237-2357', 'https://bullcityciderworks.com', '305 S Roxboro Street', 'Durham', 'NC', '27701', 'USA', 'Cidery taproom hosting regular events and live music throughout the year.', 150, ARRAY['Folk', 'Indie', 'Acoustic'], 'winery', 'Check Facebook and Instagram for event updates.', NULL, NULL, false, now(), now()),
 
  
 
@@ -212,7 +212,7 @@ VALUES
 
  
 
-  ('Biltmore Winery', NULL, NULL, 'https://www.biltmore.com/visit/winery', NULL, 'Asheville', 'NC', '28803', 'USA', 'America''s most visited winery on Biltmore Estate, live music on Scholar''s Walk and Friday afternoons.', 300, ARRAY['Jazz', 'Classical', 'Folk'], 'Winery', '40th Anniversary in 2025. Open 365 days a year.', NULL, NULL, false, now(), now()),
+  ('Biltmore Winery', NULL, NULL, 'https://www.biltmore.com/visit/winery', NULL, 'Asheville', 'NC', '28803', 'USA', 'America''s most visited winery on Biltmore Estate, live music on Scholar''s Walk and Friday afternoons.', 300, ARRAY['Jazz', 'Classical', 'Folk'], 'winery', '40th Anniversary in 2025. Open 365 days a year.', NULL, NULL, false, now(), now()),
 
  
 
