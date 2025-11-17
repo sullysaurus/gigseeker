@@ -104,7 +104,7 @@ Return valid JSON only, no markdown formatting.`
       }],
       // Enable web search
       tools: [{
-        type: 'web_search_20250315' as any,
+        type: 'web_search_20250305' as any,
         name: 'web_search' as any,
       }],
     })
