@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 
 interface ResendWebhookEvent {
   type: 'email.sent' | 'email.delivered' | 'email.opened' | 'email.clicked' | 'email.bounced' | 'email.complained'
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   try {
     const event: ResendWebhookEvent = await request.json()
 
-    const supabase = createSupabaseServerClient()
+    const supabase = await createClient()
 
     // Call database function to process the event
     const { error } = await supabase.rpc('process_email_event', {

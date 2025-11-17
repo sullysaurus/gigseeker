@@ -30,8 +30,12 @@ Return JSON only.`,
       ],
     })
 
-    const responseText =
-      message.content[0].type === 'text' ? message.content[0].text : ''
+    const firstContent = message.content[0]
+    if (!firstContent || firstContent.type !== 'text') {
+      throw new Error('Invalid response from AI')
+    }
+
+    const responseText = firstContent.text
 
     // Try to extract JSON from response (handle code blocks)
     let emailData

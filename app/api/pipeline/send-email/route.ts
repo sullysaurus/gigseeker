@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY!)
+const resend = new Resend(process.env.RESEND_API_KEY || 're_placeholder')
 
 export async function POST(request: Request) {
   try {
     const { pipelineVenueId, subject, body } = await request.json()
 
-    const supabase = createSupabaseServerClient()
+    const supabase = await createClient()
 
     // Get current user (simplified - in production use proper auth)
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -22,6 +22,7 @@ export async function POST(request: Request) {
       .from('pipeline_venues')
       .select('*, venues(*)')
       .eq('id', pipelineVenueId)
+      .eq('user_id', user.id) // Ensure user owns this pipeline venue
       .single()
 
     if (venueError || !pipelineVenue) {
@@ -80,6 +81,7 @@ export async function POST(request: Request) {
       .update({
         status: 'contacted',
         contact_attempts: (pipelineVenue.contact_attempts || 0) + 1,
+        last_contact_at: new Date().toISOString(),
       })
       .eq('id', pipelineVenueId)
 
@@ -87,6 +89,7 @@ export async function POST(request: Request) {
     await supabase.from('email_campaigns').insert({
       user_id: user.id,
       pipeline_venue_id: pipelineVenueId,
+      venue_id: pipelineVenue.venue_id,
       subject,
       body_text: body,
       recipient_email: pipelineVenue.venues.email,

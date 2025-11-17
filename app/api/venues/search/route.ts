@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
   try {
     const { query, city, state, genres, limit = 20, offset = 0 } = await request.json()
 
-    const supabase = createSupabaseServerClient()
+    const supabase = await createClient()
 
     let dbQuery = supabase
       .from('venues')
       .select('*', { count: 'exact' })
-      .order('venue_score', { ascending: false })
+      .order('name', { ascending: true })
 
     // Full-text search
     if (query) {
@@ -42,8 +42,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
+    // Map database fields to match frontend interface
+    const mappedVenues = (venues || []).map(venue => ({
+      ...venue,
+      genres: venue.music_focus || [],
+    }))
+
     return NextResponse.json({
-      venues: venues || [],
+      venues: mappedVenues,
       total: count || 0,
       limit,
       offset,

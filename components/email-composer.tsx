@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 
 interface EmailComposerProps {
   venueName: string
@@ -82,6 +83,7 @@ export function EmailComposer({ venueName, venueEmail, creditsBalance, onSend, o
   const generateWithAI = async () => {
     if (!aiPrompt.trim()) return
 
+    const toastId = toast.loading('Generating email with AI...')
     setLoading(true)
     try {
       const response = await fetch('/api/ai/generate-email', {
@@ -94,11 +96,17 @@ export function EmailComposer({ venueName, venueEmail, creditsBalance, onSend, o
       })
 
       const data = await response.json()
-      setSubject(data.subject)
-      setBody(data.body)
-      setTab('compose')
+
+      if (response.ok) {
+        setSubject(data.subject)
+        setBody(data.body)
+        setTab('compose')
+        toast.success('Email generated!', { id: toastId })
+      } else {
+        toast.error(data.error || 'Failed to generate email', { id: toastId })
+      }
     } catch (error) {
-      alert('Failed to generate email')
+      toast.error('Failed to generate email', { id: toastId })
     } finally {
       setLoading(false)
     }
@@ -106,21 +114,22 @@ export function EmailComposer({ venueName, venueEmail, creditsBalance, onSend, o
 
   const handleSend = async () => {
     if (!subject.trim() || !body.trim()) {
-      alert('Please fill in subject and body')
+      toast.error('Please fill in subject and body')
       return
     }
 
     if (creditsBalance < 1) {
-      alert('Insufficient credits')
+      toast.error('Insufficient credits')
       return
     }
 
     setLoading(true)
     try {
       await onSend(subject, body)
+      // Success toast is handled by parent component
       onClose()
     } catch (error) {
-      alert('Failed to send email')
+      toast.error('Failed to send email')
     } finally {
       setLoading(false)
     }

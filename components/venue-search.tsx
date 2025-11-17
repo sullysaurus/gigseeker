@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 
 interface Venue {
   id: string
@@ -19,9 +20,19 @@ interface VenueSearchProps {
 }
 
 const GENRES = [
-  'Rock', 'Jazz', 'Blues', 'Country', 'Folk', 'Metal',
-  'Punk', 'Indie', 'Alternative', 'Electronic', 'Hip Hop', 'R&B'
+  'rock', 'jazz', 'blues', 'country', 'folk', 'metal',
+  'punk', 'indie', 'alternative', 'electronic', 'hip hop', 'r&b',
+  'singer songwriter', 'original', 'covers', 'tribute', 'acoustic',
+  'americana', 'bluegrass', 'jam band', 'hardcore', 'southern rock'
 ]
+
+// Helper function to capitalize genre names for display
+const capitalizeGenre = (genre: string) => {
+  return genre
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
 
 const US_STATES = [
   'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
@@ -63,10 +74,25 @@ export function VenueSearch({ onAddVenue, onClose }: VenueSearchProps) {
       })
 
       const data = await response.json()
-      setVenues(data.venues)
-      setTotal(data.total)
+
+      if (!response.ok) {
+        toast.error(data.error || 'Failed to search venues')
+        setVenues([])
+        setTotal(0)
+        return
+      }
+
+      setVenues(data.venues || [])
+      setTotal(data.total || 0)
+
+      if (!data.venues || data.venues.length === 0) {
+        toast('No venues found. Try different filters.', { icon: '🔍' })
+      }
     } catch (error) {
-      alert('Failed to search venues')
+      console.error('Search error:', error)
+      toast.error('Failed to search venues')
+      setVenues([])
+      setTotal(0)
     } finally {
       setLoading(false)
     }
@@ -77,7 +103,8 @@ export function VenueSearch({ onAddVenue, onClose }: VenueSearchProps) {
       await onAddVenue(venueId)
       setVenues(prev => prev.filter(v => v.id !== venueId))
     } catch (error) {
-      alert('Failed to add venue')
+      // Error is handled by parent component
+      console.error(error)
     }
   }
 
@@ -145,7 +172,7 @@ export function VenueSearch({ onAddVenue, onClose }: VenueSearchProps) {
                         : 'bg-white text-black hover:bg-gray-100'
                     }`}
                   >
-                    {genre}
+                    {capitalizeGenre(genre)}
                   </button>
                 ))}
               </div>
@@ -197,7 +224,7 @@ export function VenueSearch({ onAddVenue, onClose }: VenueSearchProps) {
                   <div className="flex gap-1 flex-wrap mb-2">
                     {venue.genres.map(genre => (
                       <span key={genre} className="text-xs border border-black px-2 py-1">
-                        {genre}
+                        {capitalizeGenre(genre)}
                       </span>
                     ))}
                   </div>

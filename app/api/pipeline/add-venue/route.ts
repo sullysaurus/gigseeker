@@ -1,17 +1,37 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
   try {
-    const { pipelineId, venueId, priority = 2 } = await request.json()
+    const { pipelineId: providedPipelineId, venueId, priority = 2 } = await request.json()
 
-    const supabase = createSupabaseServerClient()
+    const supabase = await createClient()
 
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Get pipelineId - use provided or find default
+    let pipelineId = providedPipelineId
+    if (!pipelineId) {
+      const { data: pipeline } = await supabase
+        .from('pipelines')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('is_default', true)
+        .single()
+
+      if (!pipeline) {
+        return NextResponse.json(
+          { error: 'No default pipeline found. Please create a pipeline first.' },
+          { status: 404 }
+        )
+      }
+
+      pipelineId = pipeline.id
     }
 
     // Check for duplicates
@@ -35,6 +55,7 @@ export async function POST(request: Request) {
       .insert({
         pipeline_id: pipelineId,
         venue_id: venueId,
+        user_id: user.id,
         status: 'discovered',
         priority,
       })
@@ -45,7 +66,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ venue: pipelineVenue })
+    // Map database fields to match frontend interface
+    const mappedPipelineVenue = pipelineVenue ? {
+      ...pipelineVenue,
+      venues: pipelineVenue.venues ? {
+        ...pipelineVenue.venues,
+        genres: pipelineVenue.venues.music_focus || [],
+      } : null,
+    } : null
+
+    return NextResponse.json({ venue: mappedPipelineVenue })
   } catch (error) {
     console.error('Add venue error:', error)
     return NextResponse.json(
