@@ -27,7 +27,6 @@ interface Venue {
   venue_type: string  // Single value: 'bar', 'club', 'theater', etc.
   music_focus: string[]  // Array of genres
   capacity: number
-  booking_email: string
   created_at: string
 }
 
@@ -379,7 +378,6 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
                         STATE {venueSortField === 'state' && (venueSortDirection === 'asc' ? '↑' : '↓')}
                       </th>
                       <th className="border-2 border-black p-2 text-left whitespace-nowrap">EMAIL</th>
-                      <th className="border-2 border-black p-2 text-left whitespace-nowrap">BOOKING EMAIL</th>
                       <th className="border-2 border-black p-2 text-left whitespace-nowrap">PHONE</th>
                       <th className="border-2 border-black p-2 text-left whitespace-nowrap">WEBSITE</th>
                       <th
@@ -406,9 +404,6 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
                         <td className="border-2 border-black p-2 whitespace-nowrap">{v.city}</td>
                         <td className="border-2 border-black p-2 whitespace-nowrap">{v.state}</td>
                         <td className="border-2 border-black p-2 text-xs max-w-xs truncate" title={v.email}>{v.email}</td>
-                        <td className="border-2 border-black p-2 text-xs max-w-xs truncate" title={v.booking_email || ''}>
-                          {v.booking_email || '-'}
-                        </td>
                         <td className="border-2 border-black p-2 whitespace-nowrap">{v.phone || '-'}</td>
                         <td className="border-2 border-black p-2 text-xs max-w-xs truncate" title={v.website || ''}>
                           {v.website ? (
@@ -499,7 +494,6 @@ function VenueForm({ venue, onSave, onClose }: VenueFormProps) {
       email: '',
       phone: '',
       website: '',
-      booking_email: '',
       capacity: 0,
       venue_type: '',
       music_focus: [],
@@ -561,16 +555,6 @@ function VenueForm({ venue, onSave, onClose }: VenueFormProps) {
                 className="w-full border-2 border-black p-2"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              />
-            </div>
-
-            <div>
-              <label className="block font-bold mb-2">BOOKING EMAIL</label>
-              <input
-                type="email"
-                className="w-full border-2 border-black p-2"
-                value={formData.booking_email}
-                onChange={(e) => setFormData({ ...formData, booking_email: e.target.value })}
               />
             </div>
 
