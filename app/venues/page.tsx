@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Navigation } from '@/components/navigation'
+import { EmailComposer } from '@/components/email-composer'
 import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
 
@@ -62,6 +63,7 @@ export default function VenuesPage() {
   const [subscriptionTier, setSubscriptionTier] = useState<'free' | 'pro' | 'agency'>('free')
   const [initialLoading, setInitialLoading] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
+  const [showEmailComposer, setShowEmailComposer] = useState(false)
 
   // Load user and credits on mount
   useEffect(() => {
@@ -190,6 +192,41 @@ export default function VenuesPage() {
     setTotal(0)
   }
 
+  const handleComposeBlankEmail = () => {
+    setShowEmailComposer(true)
+  }
+
+  const handleEmailSent = async (recipientEmail: string, subject: string, body: string) => {
+    try {
+      // Sending a blank email (not tied to pipeline)
+      const response = await fetch('/api/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipientEmail,
+          subject,
+          body,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setShowEmailComposer(false)
+        toast.success('Email sent successfully!')
+      } else {
+        if (data.requiresUpgrade) {
+          toast.error(data.error || 'Pro subscription required to send emails')
+        } else {
+          toast.error(data.error || 'Failed to send email')
+        }
+      }
+    } catch (error) {
+      console.error('Failed to send email:', error)
+      toast.error('Failed to send email')
+    }
+  }
+
   const currentPage = Math.floor(offset / RESULTS_PER_PAGE) + 1
   const totalPages = Math.ceil(total / RESULTS_PER_PAGE)
 
@@ -208,7 +245,12 @@ export default function VenuesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation user={user} aiCreditsBalance={credits} subscriptionTier={subscriptionTier} />
+      <Navigation
+        user={user}
+        aiCreditsBalance={credits}
+        subscriptionTier={subscriptionTier}
+        onComposeEmail={handleComposeBlankEmail}
+      />
 
       <main className="px-4 py-6 md:p-8">
         <div className="max-w-7xl mx-auto">
@@ -551,6 +593,16 @@ export default function VenuesPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Email Composer Modal */}
+      {showEmailComposer && (
+        <EmailComposer
+          creditsBalance={credits}
+          onSend={handleEmailSent}
+          onClose={() => setShowEmailComposer(false)}
+          onCreditsUpdate={(newBalance) => setCredits(newBalance)}
+        />
       )}
     </div>
   )

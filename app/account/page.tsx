@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Navigation } from '@/components/navigation'
+import { CheckoutButton } from '@/components/checkout-button'
 import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
@@ -159,12 +160,13 @@ export default function AccountPage() {
                   </p>
                 </div>
                 {subscriptionTier === 'free' && (
-                  <Link
-                    href="/#pricing"
+                  <CheckoutButton
+                    priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
+                    tierName="Pro"
                     className="border-3 border-black bg-accent-blue text-white px-6 py-3 font-black hover:bg-accent-purple transition-colors shadow-brutalist-sm"
                   >
                     UPGRADE
-                  </Link>
+                  </CheckoutButton>
                 )}
               </div>
 
@@ -306,12 +308,13 @@ export default function AccountPage() {
                       <li>✓ More AI credits</li>
                       <li>✓ Priority support</li>
                     </ul>
-                    <button
-                      onClick={() => toast('Stripe integration coming soon!')}
+                    <CheckoutButton
+                      priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
+                      tierName="Pro"
                       className="w-full border-3 border-black bg-white text-black px-6 py-3 font-black hover:bg-accent-yellow transition-colors shadow-brutalist-sm"
                     >
                       UPGRADE TO PRO
-                    </button>
+                    </CheckoutButton>
                   </div>
 
                   {/* Agency Plan */}
@@ -326,12 +329,13 @@ export default function AccountPage() {
                       <li>✓ Advanced analytics</li>
                       <li>✓ Tour routing</li>
                     </ul>
-                    <button
-                      onClick={() => toast('Stripe integration coming soon!')}
+                    <CheckoutButton
+                      priceId={process.env.NEXT_PUBLIC_STRIPE_AGENCY_PRICE_ID!}
+                      tierName="Agency"
                       className="w-full border-3 border-black bg-white text-black px-6 py-3 font-black hover:bg-accent-yellow transition-colors shadow-brutalist-sm"
                     >
                       UPGRADE TO AGENCY
-                    </button>
+                    </CheckoutButton>
                   </div>
                 </div>
               </div>

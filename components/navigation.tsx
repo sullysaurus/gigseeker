@@ -104,6 +104,17 @@ export function Navigation({ user, aiCreditsBalance, subscriptionTier, onCompose
                 🎁
               </button>
 
+              {/* Upgrade CTA for Free Users */}
+              {subscriptionTier === 'free' && (
+                <Link
+                  href="/account"
+                  className="border-2 border-black bg-accent-yellow text-black px-4 py-1.5 font-black text-sm hover:bg-accent-purple hover:text-white transition-colors animate-pulse"
+                  title="Upgrade to send emails and unlock all features"
+                >
+                  ⚡ UPGRADE
+                </Link>
+              )}
+
               {/* Hamburger for secondary items */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -244,6 +255,17 @@ export function Navigation({ user, aiCreditsBalance, subscriptionTier, onCompose
                   >
                     🎁 INVITE FRIENDS
                   </button>
+
+                  {/* Mobile: Upgrade CTA for Free Users */}
+                  {subscriptionTier === 'free' && (
+                    <Link
+                      href="/account"
+                      onClick={closeMobileMenu}
+                      className="w-full text-left border-2 border-black bg-accent-yellow text-black px-4 py-3 font-black hover:bg-accent-purple hover:text-white transition-colors"
+                    >
+                      ⚡ UPGRADE TO PRO
+                    </Link>
+                  )}
 
                   <button
                     onClick={() => {
