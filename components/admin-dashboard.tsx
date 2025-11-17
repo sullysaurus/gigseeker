@@ -48,6 +48,20 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
   const [showCreateVenue, setShowCreateVenue] = useState(false)
   const [venueSortField, setVenueSortField] = useState<VenueSortField>('name')
   const [venueSortDirection, setVenueSortDirection] = useState<SortDirection>('asc')
+
+  // Enrichment state
+  const [enrichingVenueId, setEnrichingVenueId] = useState<string | null>(null)
+  const [enrichmentData, setEnrichmentData] = useState<any>(null)
+  const [showEnrichmentReview, setShowEnrichmentReview] = useState(false)
+  const [currentVenueData, setCurrentVenueData] = useState<any>(null)
+
+  // Discovery state
+  const [showDiscoverVenues, setShowDiscoverVenues] = useState(false)
+  const [discoveryCity, setDiscoveryCity] = useState('')
+  const [discoveryState, setDiscoveryState] = useState('NC')
+  const [discoveredVenues, setDiscoveredVenues] = useState<any[]>([])
+  const [discoveringVenues, setDiscoveringVenues] = useState(false)
+
   const supabase = createClient()
 
   // Load users
@@ -194,6 +208,126 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
     } else {
       toast.success('Venue deleted successfully')
       loadVenues()
+    }
+  }
+
+  // Enrich venue with AI
+  const handleEnrichVenue = async (venueId: string) => {
+    setEnrichingVenueId(venueId)
+
+    try {
+      const response = await fetch('/api/admin/enrich-venue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ venueId }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        toast.error(data.error || 'Failed to enrich venue')
+        return
+      }
+
+      // Show review modal with suggestions
+      setEnrichmentData(data.enrichmentData)
+      setCurrentVenueData(data.currentData)
+      setShowEnrichmentReview(true)
+      toast.success('Enrichment complete! Review suggestions below.')
+    } catch (error) {
+      toast.error('Failed to enrich venue')
+    } finally {
+      setEnrichingVenueId(null)
+    }
+  }
+
+  // Apply selected enrichment fields
+  const handleApplyEnrichment = async (approvedFields: any) => {
+    if (!currentVenueData) return
+
+    try {
+      // Build update object from approved fields
+      const updates: any = {}
+      Object.keys(approvedFields).forEach(key => {
+        if (approvedFields[key]) {
+          updates[key] = enrichmentData[key]?.value
+        }
+      })
+
+      await updateVenue(currentVenueData.id, updates)
+      setShowEnrichmentReview(false)
+      setEnrichmentData(null)
+      setCurrentVenueData(null)
+      toast.success('Venue updated with enriched data!')
+    } catch (error) {
+      toast.error('Failed to apply enrichment')
+    }
+  }
+
+  // Discover new venues
+  const handleDiscoverVenues = async () => {
+    if (!discoveryCity || !discoveryState) {
+      toast.error('Please enter city and state')
+      return
+    }
+
+    setDiscoveringVenues(true)
+
+    try {
+      const response = await fetch('/api/admin/discover-venues', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          city: discoveryCity,
+          state: discoveryState,
+          limit: 10,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        toast.error(data.error || 'Failed to discover venues')
+        return
+      }
+
+      setDiscoveredVenues(data.venues || [])
+      toast.success(`Found ${data.venues?.length || 0} new venues!`)
+    } catch (error) {
+      toast.error('Failed to discover venues')
+    } finally {
+      setDiscoveringVenues(false)
+    }
+  }
+
+  // Bulk add discovered venues
+  const handleAddDiscoveredVenues = async (venuesToAdd: any[]) => {
+    if (venuesToAdd.length === 0) {
+      toast.error('No venues selected')
+      return
+    }
+
+    try {
+      // Add is_verified flag
+      const venuesWithVerified = venuesToAdd.map(v => ({
+        ...v,
+        is_verified: true,
+      }))
+
+      const { data, error } = await supabase
+        .from('venues')
+        .insert(venuesWithVerified)
+
+      if (error) {
+        toast.error('Error adding venues: ' + error.message)
+      } else {
+        toast.success(`Successfully added ${venuesToAdd.length} venues!`)
+        setDiscoveredVenues([])
+        setShowDiscoverVenues(false)
+        loadVenues()
+      }
+    } catch (error) {
+      toast.error('Failed to add venues')
     }
   }
 
@@ -344,12 +478,20 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
           <div className="border-3 border-black bg-white p-6 shadow-brutalist">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-black">VENUE MANAGEMENT</h2>
-              <button
-                onClick={() => setShowCreateVenue(true)}
-                className="border-2 border-black bg-black text-white px-4 py-2 font-bold hover:bg-accent-blue transition-colors"
-              >
-                + CREATE VENUE
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowDiscoverVenues(true)}
+                  className="border-2 border-black bg-accent-purple text-white px-4 py-2 font-bold hover:bg-accent-blue transition-colors"
+                >
+                  🔍 DISCOVER VENUES
+                </button>
+                <button
+                  onClick={() => setShowCreateVenue(true)}
+                  className="border-2 border-black bg-black text-white px-4 py-2 font-bold hover:bg-accent-blue transition-colors"
+                >
+                  + CREATE VENUE
+                </button>
+              </div>
             </div>
 
             {loading ? (
@@ -434,6 +576,13 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
                         <td className="border-2 border-black p-2">
                           <div className="flex gap-2">
                             <button
+                              onClick={() => handleEnrichVenue(v.id)}
+                              disabled={enrichingVenueId === v.id}
+                              className="border-2 border-black bg-accent-yellow text-black px-3 py-1 font-bold text-sm hover:bg-accent-purple hover:text-white transition-colors disabled:opacity-50"
+                            >
+                              {enrichingVenueId === v.id ? '...' : '✨ ENRICH'}
+                            </button>
+                            <button
                               onClick={() => setEditingVenue(v)}
                               className="border-2 border-black bg-accent-blue text-white px-3 py-1 font-bold text-sm hover:bg-accent-purple transition-colors"
                             >
@@ -472,6 +621,40 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
               />
             )}
           </div>
+        )}
+
+        {/* Enrichment Review Modal */}
+        {showEnrichmentReview && enrichmentData && currentVenueData && (
+          <EnrichmentReviewModal
+            enrichmentData={enrichmentData}
+            currentData={currentVenueData}
+            onApply={handleApplyEnrichment}
+            onClose={() => {
+              setShowEnrichmentReview(false)
+              setEnrichmentData(null)
+              setCurrentVenueData(null)
+            }}
+          />
+        )}
+
+        {/* Discovery Modal */}
+        {showDiscoverVenues && (
+          <DiscoveryModal
+            city={discoveryCity}
+            state={discoveryState}
+            onCityChange={setDiscoveryCity}
+            onStateChange={setDiscoveryState}
+            discoveredVenues={discoveredVenues}
+            discovering={discoveringVenues}
+            onDiscover={handleDiscoverVenues}
+            onAddVenues={handleAddDiscoveredVenues}
+            onClose={() => {
+              setShowDiscoverVenues(false)
+              setDiscoveredVenues([])
+              setDiscoveryCity('')
+              setDiscoveryState('NC')
+            }}
+          />
         )}
       </div>
     </div>
@@ -605,6 +788,321 @@ function VenueForm({ venue, onSave, onClose }: VenueFormProps) {
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  )
+}
+
+// Enrichment Review Modal Component
+interface EnrichmentReviewModalProps {
+  enrichmentData: any
+  currentData: any
+  onApply: (approvedFields: any) => void
+  onClose: () => void
+}
+
+function EnrichmentReviewModal({ enrichmentData, currentData, onApply, onClose }: EnrichmentReviewModalProps) {
+  const [approvedFields, setApprovedFields] = useState<{ [key: string]: boolean }>({})
+
+  const toggleField = (field: string) => {
+    setApprovedFields(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }))
+  }
+
+  const handleApply = () => {
+    onApply(approvedFields)
+  }
+
+  const enrichableFields = Object.keys(enrichmentData).filter(key => key !== 'confidence')
+  const hasSelections = Object.values(approvedFields).some(v => v)
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white border-3 border-black p-6 max-w-4xl w-full shadow-brutalist my-8 max-h-[90vh] overflow-y-auto">
+        <h3 className="text-2xl font-black mb-4">✨ ENRICHMENT SUGGESTIONS</h3>
+        <p className="text-sm mb-6 text-gray-600">
+          Review Claude's suggestions and select which fields to update. Green = new data, Gray = current value.
+        </p>
+
+        {enrichableFields.length === 0 ? (
+          <p className="text-center py-8 text-gray-500">No enrichment suggestions found. Try again later.</p>
+        ) : (
+          <div className="space-y-4 mb-6">
+            {enrichableFields.map(field => {
+              const suggestion = enrichmentData[field]
+              const currentValue = currentData[field]
+              const isArray = Array.isArray(suggestion?.value)
+
+              return (
+                <div key={field} className="border-2 border-black p-4">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={approvedFields[field] || false}
+                      onChange={() => toggleField(field)}
+                      className="mt-1 w-5 h-5"
+                    />
+                    <div className="flex-1">
+                      <label className="block font-bold text-sm mb-2 uppercase">{field.replace(/_/g, ' ')}</label>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Current Value */}
+                        <div>
+                          <p className="text-xs font-bold mb-1 text-gray-500">CURRENT:</p>
+                          <div className="bg-gray-100 border border-gray-300 p-2 text-sm">
+                            {isArray && Array.isArray(currentValue) ? (
+                              currentValue.length > 0 ? currentValue.join(', ') : '(empty)'
+                            ) : (
+                              currentValue || '(empty)'
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Suggested Value */}
+                        <div>
+                          <p className="text-xs font-bold mb-1 text-green-600">SUGGESTED:</p>
+                          <div className="bg-green-50 border border-green-400 p-2 text-sm">
+                            {isArray ? (
+                              Array.isArray(suggestion.value) ? suggestion.value.join(', ') : suggestion.value
+                            ) : (
+                              suggestion.value
+                            )}
+                          </div>
+                          {suggestion.confidence && (
+                            <p className="text-xs text-gray-500 mt-1">Confidence: {suggestion.confidence}%</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <button
+            onClick={handleApply}
+            disabled={!hasSelections}
+            className="flex-1 border-2 border-black bg-black text-white px-4 py-3 font-bold hover:bg-accent-blue transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            APPLY SELECTED ({Object.values(approvedFields).filter(Boolean).length})
+          </button>
+          <button
+            onClick={onClose}
+            className="border-2 border-black bg-white px-6 py-3 font-bold hover:bg-black hover:text-white transition-colors"
+          >
+            CANCEL
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Discovery Modal Component
+interface DiscoveryModalProps {
+  city: string
+  state: string
+  onCityChange: (city: string) => void
+  onStateChange: (state: string) => void
+  discoveredVenues: any[]
+  discovering: boolean
+  onDiscover: () => void
+  onAddVenues: (venues: any[]) => void
+  onClose: () => void
+}
+
+function DiscoveryModal({
+  city,
+  state,
+  onCityChange,
+  onStateChange,
+  discoveredVenues,
+  discovering,
+  onDiscover,
+  onAddVenues,
+  onClose
+}: DiscoveryModalProps) {
+  const [selectedVenues, setSelectedVenues] = useState<{ [id: number]: boolean }>({})
+
+  const toggleVenue = (index: number) => {
+    setSelectedVenues(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }))
+  }
+
+  const selectAll = () => {
+    const allSelected: { [id: number]: boolean } = {}
+    discoveredVenues.forEach((_, i) => {
+      allSelected[i] = true
+    })
+    setSelectedVenues(allSelected)
+  }
+
+  const deselectAll = () => {
+    setSelectedVenues({})
+  }
+
+  const handleAddSelected = () => {
+    const venuesToAdd = discoveredVenues.filter((_, i) => selectedVenues[i])
+    onAddVenues(venuesToAdd)
+  }
+
+  const selectedCount = Object.values(selectedVenues).filter(Boolean).length
+
+  const US_STATES = [
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+  ]
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white border-3 border-black p-6 max-w-6xl w-full shadow-brutalist my-8 max-h-[90vh] overflow-y-auto">
+        <h3 className="text-2xl font-black mb-4">🔍 DISCOVER NEW VENUES</h3>
+        <p className="text-sm mb-6 text-gray-600">
+          Use AI to find new music venues in a location. Claude will search the web and return venue data.
+        </p>
+
+        {/* Search Form */}
+        <div className="border-2 border-black p-4 mb-6 bg-gray-50">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <label className="block font-bold mb-2 text-sm">CITY</label>
+              <input
+                type="text"
+                value={city}
+                onChange={(e) => onCityChange(e.target.value)}
+                placeholder="Raleigh, Charlotte, etc."
+                className="w-full border-2 border-black p-2"
+              />
+            </div>
+            <div>
+              <label className="block font-bold mb-2 text-sm">STATE</label>
+              <select
+                value={state}
+                onChange={(e) => onStateChange(e.target.value)}
+                className="w-full border-2 border-black p-2"
+              >
+                {US_STATES.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <button
+            onClick={onDiscover}
+            disabled={discovering || !city || !state}
+            className="w-full mt-4 border-2 border-black bg-black text-white px-4 py-3 font-bold hover:bg-accent-purple transition-colors disabled:opacity-50"
+          >
+            {discovering ? 'SEARCHING...' : 'SEARCH FOR VENUES'}
+          </button>
+        </div>
+
+        {/* Results */}
+        {discoveredVenues.length > 0 && (
+          <>
+            <div className="flex justify-between items-center mb-4">
+              <h4 className="font-bold">FOUND {discoveredVenues.length} VENUES</h4>
+              <div className="flex gap-2">
+                <button
+                  onClick={selectAll}
+                  className="text-sm border-2 border-black px-3 py-1 hover:bg-gray-100"
+                >
+                  SELECT ALL
+                </button>
+                <button
+                  onClick={deselectAll}
+                  className="text-sm border-2 border-black px-3 py-1 hover:bg-gray-100"
+                >
+                  DESELECT ALL
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-3 mb-6 max-h-96 overflow-y-auto border-2 border-black p-4">
+              {discoveredVenues.map((venue, index) => (
+                <div
+                  key={index}
+                  className={`border-2 border-black p-3 cursor-pointer transition-colors ${
+                    selectedVenues[index] ? 'bg-accent-yellow' : 'bg-white hover:bg-gray-50'
+                  }`}
+                  onClick={() => toggleVenue(index)}
+                >
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedVenues[index] || false}
+                      onChange={() => toggleVenue(index)}
+                      className="mt-1 w-5 h-5"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <div className="flex-1">
+                      <h5 className="font-black text-lg">{venue.name}</h5>
+                      <p className="text-sm text-gray-600 mb-2">
+                        📍 {venue.city}, {venue.state} {venue.zip_code && `• ${venue.zip_code}`}
+                      </p>
+                      {venue.description && (
+                        <p className="text-sm mb-2">{venue.description}</p>
+                      )}
+                      <div className="flex flex-wrap gap-2 text-xs">
+                        {venue.email && <span>✉️ {venue.email}</span>}
+                        {venue.phone && <span>📞 {venue.phone}</span>}
+                        {venue.capacity && <span>👥 {venue.capacity}</span>}
+                        {venue.website && (
+                          <a
+                            href={venue.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            🌐 Website
+                          </a>
+                        )}
+                      </div>
+                      {venue.music_focus && venue.music_focus.length > 0 && (
+                        <div className="flex gap-1 flex-wrap mt-2">
+                          {venue.music_focus.map((genre: string, i: number) => (
+                            <span key={i} className="text-xs px-2 py-1 bg-gray-200 border border-gray-400">
+                              {genre}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {venue.confidence && (
+                        <p className="text-xs text-gray-500 mt-2">Confidence: {venue.confidence}%</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={handleAddSelected}
+              disabled={selectedCount === 0}
+              className="w-full border-2 border-black bg-accent-purple text-white px-4 py-3 font-bold hover:bg-accent-blue transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ADD SELECTED VENUES ({selectedCount})
+            </button>
+          </>
+        )}
+
+        <button
+          onClick={onClose}
+          className="w-full mt-4 border-2 border-black bg-white px-4 py-3 font-bold hover:bg-black hover:text-white transition-colors"
+        >
+          CLOSE
+        </button>
       </div>
     </div>
   )
