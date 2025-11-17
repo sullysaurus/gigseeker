@@ -1,0 +1,1062 @@
+-- Nashville Venues - 50 venues with comprehensive information
+-- Generated for GigSeeker database
+
+BEGIN;
+
+-- Insert 50 Nashville music venues
+INSERT INTO public.venues (
+    name, email, phone, website, address, city, state, zip_code, country,
+    description, capacity, music_focus, venue_type, booking_notes,
+    instagram_handle, facebook_url, is_verified
+) VALUES
+-- 1. The Pinnacle
+(
+    'The Pinnacle',
+    'thepinnacleinfo@aegpresents.com',
+    NULL,
+    'https://thepinnaclenashville.com',
+    'Nashville Yards',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'State-of-the-art 4,500-capacity venue that opened in February 2025 within Nashville Yards',
+    4500,
+    ARRAY['Rock', 'Indie', 'Alternative', 'Pop'],
+    'Concert Hall',
+    'New premier mid-sized concert venue',
+    NULL,
+    NULL,
+    false
+),
+
+-- 2. Third Man Records - Blue Room
+(
+    'The Blue Room Bar (Third Man Records)',
+    'blueroom@thirdmanrecords.com',
+    NULL,
+    'https://theblueroombar.com',
+    'Third Man Records Headquarters',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Intimate space at Nashville''s Third Man Records headquarters, now open to the public weekly',
+    150,
+    ARRAY['Rock', 'Alternative', 'Punk', 'Indie'],
+    'Bar/Club',
+    'Associated with Jack White''s Third Man Records',
+    NULL,
+    NULL,
+    false
+),
+
+-- 3. The Listening Room Cafe
+(
+    'The Listening Room Cafe',
+    NULL,
+    '615-259-3600',
+    'https://listeningroomcafe.com',
+    '618 4th Ave South',
+    'Nashville',
+    'TN',
+    '37210',
+    'USA',
+    'Premier listening room featuring songwriters and acoustic performances',
+    200,
+    ARRAY['Country', 'Americana', 'Singer-Songwriter', 'Folk'],
+    'Listening Room',
+    'Intimate songwriter venue, advance reservations recommended',
+    NULL,
+    NULL,
+    false
+),
+
+-- 4. The Stage on Broadway
+(
+    'The Stage on Broadway',
+    NULL,
+    '615-726-0504',
+    'https://www.thestageonbroadway.com',
+    'Broadway',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Multi-level honky tonk on Broadway featuring live country music',
+    400,
+    ARRAY['Country', 'Honky Tonk'],
+    'Honky Tonk',
+    'Located on famous Broadway strip',
+    NULL,
+    NULL,
+    false
+),
+
+-- 5. Tootsie''s Orchid Lounge
+(
+    'Tootsie''s Orchid Lounge',
+    NULL,
+    '615-726-0463',
+    NULL,
+    '422 Broadway',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Legendary honky tonk in the heart of downtown Nashville, open since 1960',
+    300,
+    ARRAY['Country', 'Honky Tonk'],
+    'Honky Tonk',
+    'Iconic Nashville venue with rich history. Open 10am-3am daily',
+    NULL,
+    NULL,
+    false
+),
+
+-- 6. Layla''s Honky Tonk
+(
+    'Layla''s Honky Tonk',
+    NULL,
+    '615-726-2799',
+    NULL,
+    '418 Broadway',
+    'Nashville',
+    'TN',
+    '37203',
+    'USA',
+    'Multi-story honky tonk on Broadway with live music and dancing',
+    500,
+    ARRAY['Country', 'Honky Tonk'],
+    'Honky Tonk',
+    'Open Mon-Wed 10:30am-1:30am, Thu-Sat 10:30am-2:30am, Sun 10:30am-2:30am',
+    NULL,
+    'https://www.yelp.com/biz/laylas-honky-tonk-nashville',
+    false
+),
+
+-- 7. Robert''s Western World
+(
+    'Robert''s Western World',
+    NULL,
+    '615-244-9552',
+    NULL,
+    '416B Broadway',
+    'Nashville',
+    'TN',
+    '37203',
+    'USA',
+    'Authentic honky tonk known for traditional country music and recession specials',
+    250,
+    ARRAY['Country', 'Honky Tonk', 'Bluegrass'],
+    'Honky Tonk',
+    'One of the last authentic Nashville honky tonks',
+    NULL,
+    NULL,
+    false
+),
+
+-- 8. Exit/In
+(
+    'Exit/In',
+    'booking@exitin.com',
+    '615-274-9372',
+    'https://exitin.com',
+    '2208 Elliston Pl',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Nashville''s Music Forum Since 1971 - iconic indie and alternative venue',
+    500,
+    ARRAY['Rock', 'Indie', 'Alternative', 'Punk'],
+    'Music Venue',
+    'General inquiries: info@exitin.com',
+    NULL,
+    'https://www.facebook.com/exitinnashville/',
+    false
+),
+
+-- 9. Bluebird Cafe
+(
+    'Bluebird Cafe',
+    'info@bluebirdcafe.com',
+    '615-383-1461',
+    'https://bluebirdcafe.com',
+    NULL,
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'World-famous intimate listening room known for songwriter nights',
+    90,
+    ARRAY['Country', 'Singer-Songwriter', 'Americana'],
+    'Listening Room',
+    'Events: events@bluebirdcafe.com. Reservations required, very popular venue',
+    NULL,
+    NULL,
+    false
+),
+
+-- 10. Grand Ole Opry
+(
+    'Grand Ole Opry',
+    'oprymarketing@opry.com',
+    '615-871-6779',
+    'https://www.opry.com',
+    NULL,
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'World-famous live country radio show and performance venue',
+    4400,
+    ARRAY['Country', 'Bluegrass', 'Gospel'],
+    'Theater',
+    'Customer Service: 800-733-6779',
+    NULL,
+    NULL,
+    false
+),
+
+-- 11. Ryman Auditorium
+(
+    'Ryman Auditorium',
+    'donations@ryman.com',
+    '615-889-3060',
+    'https://www.ryman.com',
+    NULL,
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'The Mother Church of Country Music - historic venue and former home of the Grand Ole Opry',
+    2362,
+    ARRAY['Country', 'Rock', 'Americana', 'Folk', 'Blues'],
+    'Theater',
+    'Contact Opry Events for private events/rentals',
+    NULL,
+    NULL,
+    false
+),
+
+-- 12. Mercy Lounge / Cannery Ballroom
+(
+    'Mercy Lounge / Cannery Ballroom',
+    'info@mercylounge.com',
+    '615-251-3020',
+    'https://www.mercylounge.com',
+    'One Cannery Row',
+    'Nashville',
+    'TN',
+    '37203',
+    'USA',
+    'Multi-room venue complex with Cannery Ballroom (main room) and Mercy Lounge upstairs',
+    1275,
+    ARRAY['Rock', 'Indie', 'Alternative', 'Hip Hop', 'Electronic'],
+    'Music Venue',
+    'Booking: booking@mercylounge.com',
+    NULL,
+    'https://www.facebook.com/mercylounge/',
+    false
+),
+
+-- 13. Brooklyn Bowl Nashville
+(
+    'Brooklyn Bowl Nashville',
+    'nashvilleinfo@brooklynbowl.com',
+    '615-953-5410',
+    'https://www.brooklynbowl.com/nashville',
+    '925 3rd Avenue North',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Music venue, bowling alley, and restaurant featuring live performances',
+    1200,
+    ARRAY['Rock', 'Indie', 'Alternative', 'Hip Hop', 'Electronic'],
+    'Music Venue',
+    'Booking: nashvillebooking@brooklynbowl.com',
+    NULL,
+    'https://www.facebook.com/BrooklynBowlNashville/',
+    false
+),
+
+-- 14. Marathon Music Works
+(
+    'Marathon Music Works',
+    'info@marathonmusicworks.com',
+    '615-891-1781',
+    'https://www.marathonmusicworks.com',
+    '1402 Clinton St',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Large warehouse-style music venue in the Marathon Village',
+    1800,
+    ARRAY['Rock', 'Indie', 'Alternative', 'Electronic', 'Hip Hop'],
+    'Music Venue',
+    'Event inquiries: events@marathonmusicworks.com',
+    NULL,
+    'https://www.facebook.com/marathonmusicworks/',
+    false
+),
+
+-- 15. 3rd and Lindsley
+(
+    '3rd and Lindsley',
+    'mail@3rdandlindsley.com',
+    NULL,
+    'https://www.3rdandlindsley.com',
+    '816 3rd Ave S',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Bar & Grill with live music featuring diverse genres',
+    550,
+    ARRAY['Rock', 'Blues', 'Jazz', 'Americana'],
+    'Bar/Club',
+    'Talent Buyer: cobb@bonafide-live.com, Events: eventsat3rd@gmail.com',
+    NULL,
+    'https://www.facebook.com/3rdlindsley/',
+    false
+),
+
+-- 16. Station Inn
+(
+    'Station Inn',
+    'joshuaulbrich@stationinn.com',
+    NULL,
+    'https://stationinn.com',
+    '402 12th Ave S',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Legendary bluegrass venue in The Gulch',
+    200,
+    ARRAY['Bluegrass', 'Country', 'Americana'],
+    'Music Venue',
+    'Premier bluegrass and acoustic music venue',
+    NULL,
+    NULL,
+    false
+),
+
+-- 17. The Basement East
+(
+    'The Basement East',
+    'info@thebasementnashville.com',
+    NULL,
+    'https://www.thebasementnashville.com',
+    '917 Woodland St',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'East Nashville music venue featuring indie and alternative acts',
+    400,
+    ARRAY['Indie', 'Rock', 'Alternative', 'Punk'],
+    'Music Venue',
+    'Booking: mike@thebasementnashville.com',
+    NULL,
+    'https://www.facebook.com/thebasementeast/',
+    false
+),
+
+-- 18. Ascend Amphitheater
+(
+    'Ascend Amphitheater',
+    'ascendinfo@livenation.com',
+    '615-919-5788',
+    'https://www.ascendamphitheater.com',
+    '301 1st Ave S',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Outdoor amphitheater on the Cumberland River waterfront',
+    6800,
+    ARRAY['Rock', 'Country', 'Pop', 'Hip Hop', 'Alternative'],
+    'Amphitheater',
+    'Seasonal outdoor venue with river views',
+    NULL,
+    'https://www.facebook.com/Ascendamphitheaternashville/',
+    false
+),
+
+-- 19. Bridgestone Arena
+(
+    'Bridgestone Arena',
+    'boxofficequestions@nashvillepredators.com',
+    '615-770-2040',
+    'https://www.bridgestonearena.com',
+    '501 Broadway',
+    'Nashville',
+    'TN',
+    '37203',
+    'USA',
+    'Major sports and entertainment arena in downtown Nashville',
+    20000,
+    ARRAY['Rock', 'Country', 'Pop', 'Hip Hop'],
+    'Arena',
+    'Premium seating: premiumseatsales@nashvillepredators.com',
+    NULL,
+    NULL,
+    false
+),
+
+-- 20. Nashville Municipal Auditorium
+(
+    'Nashville Municipal Auditorium',
+    'info@nashvilleauditorium.com',
+    '615-862-6390',
+    'https://www.nashvilleauditorium.com',
+    NULL,
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Historic multi-purpose auditorium for concerts and events',
+    9600,
+    ARRAY['Rock', 'Country', 'Gospel', 'Hip Hop'],
+    'Auditorium',
+    'Historic venue with diverse programming',
+    NULL,
+    NULL,
+    false
+),
+
+-- 21. Acme Feed & Seed
+(
+    'Acme Feed & Seed',
+    NULL,
+    '615-915-0888',
+    'https://www.acmefeedandseed.com',
+    '101 Broadway',
+    'Nashville',
+    'TN',
+    '37201',
+    'USA',
+    'Multi-level bar and restaurant on Broadway with rooftop venue',
+    600,
+    ARRAY['Country', 'Rock', 'Americana'],
+    'Bar/Club',
+    'Features rooftop bar with live music',
+    NULL,
+    NULL,
+    false
+),
+
+-- 22. Rudy''s Jazz Room
+(
+    'Rudy''s Jazz Room',
+    NULL,
+    '615-988-2458',
+    'https://www.rudysjazzroom.com',
+    '809 Gleaves St',
+    'Nashville',
+    'TN',
+    '37203',
+    'USA',
+    'Nashville''s premier jazz club and live music venue',
+    200,
+    ARRAY['Jazz', 'Blues', 'Soul'],
+    'Jazz Club',
+    'Upscale jazz venue in The Gulch',
+    NULL,
+    'https://www.facebook.com/rudysjazzroom/',
+    false
+),
+
+-- 23. Douglas Corner Cafe
+(
+    'Douglas Corner Cafe',
+    NULL,
+    '615-298-1688',
+    'https://douglascorner.com',
+    '30 Hillenglade Drive',
+    'Nashville',
+    'TN',
+    '37207',
+    'USA',
+    'Intimate listening room for songwriters and acoustic acts',
+    150,
+    ARRAY['Country', 'Singer-Songwriter', 'Americana', 'Folk'],
+    'Listening Room',
+    'Moved to new location from original 8th Avenue South spot',
+    NULL,
+    NULL,
+    false
+),
+
+-- 24. Little Harpeth Brewing
+(
+    'Little Harpeth Brewing',
+    'info@littleharpethbrewing.com',
+    NULL,
+    'https://www.littleharpeth.com',
+    '1 Terminal Dr',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Brewery with live music at Nashville Airport location',
+    100,
+    ARRAY['Rock', 'Country', 'Americana'],
+    'Brewery',
+    'Located in BNA Terminal B, features rotating music acts',
+    NULL,
+    'https://www.facebook.com/LittleHarpethBrewing/',
+    false
+),
+
+-- 25. The 5 Spot
+(
+    'The 5 Spot',
+    'booking@the5spotnashville.com',
+    NULL,
+    'https://the5spotnashville.com',
+    '1006 Forrest Ave',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'East Nashville dive bar and music venue',
+    200,
+    ARRAY['Rock', 'Punk', 'Indie', 'Alternative'],
+    'Bar/Club',
+    'Popular East Nashville venue with eclectic programming',
+    NULL,
+    'https://www.facebook.com/the5spotnashville/',
+    false
+),
+
+-- 26. Analog (at Hutton Hotel)
+(
+    'Analog at Hutton Hotel',
+    'info@analognashville.com',
+    NULL,
+    'https://www.analognashville.com',
+    'Hutton Hotel',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Boutique music venue inside the Hutton Hotel',
+    300,
+    ARRAY['Rock', 'Indie', 'Alternative', 'Electronic'],
+    'Music Venue',
+    'Upscale listening room with hotel amenities',
+    NULL,
+    NULL,
+    false
+),
+
+-- 27. The End
+(
+    'The End',
+    'booking@endnashville.com',
+    NULL,
+    'https://endnashville.com',
+    '2219 Elliston Pl',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Alternative music venue in Elliston Place',
+    250,
+    ARRAY['Punk', 'Metal', 'Hardcore', 'Alternative'],
+    'Music Venue',
+    'Alternative booking: endbruce@yahoo.com',
+    NULL,
+    'https://www.facebook.com/endnashville/',
+    false
+),
+
+-- 28. Springwater Supper Club & Lounge
+(
+    'Springwater Supper Club & Lounge',
+    'bookthespring@gmail.com',
+    NULL,
+    'https://www.thespringwater.com',
+    '115 27th Ave N',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Historic dive bar featuring live music',
+    150,
+    ARRAY['Rock', 'Punk', 'Country', 'Alternative'],
+    'Bar/Club',
+    'Contact: Corey Tucker for bookings',
+    NULL,
+    NULL,
+    false
+),
+
+-- 29. City Winery Nashville
+(
+    'City Winery Nashville',
+    'nashvilleconcierge@citywinery.com',
+    '615-324-1010',
+    'https://citywinery.com/nashville',
+    '609 Lafayette Street',
+    'Nashville',
+    'TN',
+    '37203',
+    'USA',
+    'Upscale winery and music venue featuring diverse acts',
+    300,
+    ARRAY['Jazz', 'Rock', 'Americana', 'Singer-Songwriter'],
+    'Winery/Venue',
+    'Combination winery, restaurant, and concert venue',
+    NULL,
+    NULL,
+    false
+),
+
+-- 30. Ole Red Nashville
+(
+    'Ole Red Nashville',
+    NULL,
+    '615-780-0900',
+    'https://olered.com/nashville',
+    '300 Broadway',
+    'Nashville',
+    'TN',
+    '37201',
+    'USA',
+    'Blake Shelton''s multi-level entertainment venue on Broadway',
+    800,
+    ARRAY['Country', 'Honky Tonk'],
+    'Honky Tonk',
+    'All ages until 9pm nightly',
+    NULL,
+    'https://www.facebook.com/OleRedNashville/',
+    false
+),
+
+-- 31. Nudie''s Honky Tonk
+(
+    'Nudie''s Honky Tonk',
+    NULL,
+    '615-942-6307',
+    'https://www.nudieshonkytonk.com',
+    '409 Broadway Ave',
+    'Nashville',
+    'TN',
+    '37203',
+    'USA',
+    'Multi-story honky tonk named after legendary designer Nudie Cohn',
+    600,
+    ARRAY['Country', 'Honky Tonk'],
+    'Honky Tonk',
+    'Located on Broadway, multiple floors of entertainment',
+    NULL,
+    'https://www.facebook.com/NudiesHonkyTonk/',
+    false
+),
+
+-- 32. Kid Rock''s Big Honky Tonk Rock N'' Roll Steakhouse
+(
+    'Kid Rock''s Big Honky Tonk',
+    NULL,
+    '615-248-2706',
+    NULL,
+    '221 Broadway',
+    'Nashville',
+    'TN',
+    '37201',
+    'USA',
+    'Multi-story honky tonk and steakhouse owned by Kid Rock',
+    1000,
+    ARRAY['Country', 'Rock', 'Honky Tonk'],
+    'Honky Tonk',
+    'Large multi-level venue on Broadway',
+    NULL,
+    NULL,
+    false
+),
+
+-- 33. AJ''s Good Time Bar
+(
+    'AJ''s Good Time Bar',
+    NULL,
+    '615-678-4808',
+    NULL,
+    '421 Broadway',
+    'Nashville',
+    'TN',
+    '37201',
+    'USA',
+    'Multi-level bar owned by AJ McLean of Backstreet Boys',
+    500,
+    ARRAY['Country', 'Pop', 'Rock'],
+    'Honky Tonk',
+    'Celebrity-owned venue on Broadway',
+    NULL,
+    NULL,
+    false
+),
+
+-- 34. Jason Aldean''s Kitchen + Rooftop Bar
+(
+    'Jason Aldean''s Kitchen + Rooftop Bar',
+    NULL,
+    NULL,
+    NULL,
+    '311 Broadway',
+    'Nashville',
+    'TN',
+    '37201',
+    'USA',
+    'Multi-level restaurant and bar owned by Jason Aldean',
+    800,
+    ARRAY['Country', 'Rock'],
+    'Bar/Club',
+    'Operated by TC Restaurant Group',
+    NULL,
+    NULL,
+    false
+),
+
+-- 35. Schermerhorn Symphony Center
+(
+    'Schermerhorn Symphony Center',
+    NULL,
+    '615-687-6400',
+    NULL,
+    '1 Symphony Pl',
+    'Nashville',
+    'TN',
+    '37201',
+    'USA',
+    'Premier concert hall and home of the Nashville Symphony',
+    1872,
+    ARRAY['Classical', 'Jazz', 'Pops'],
+    'Concert Hall',
+    'Hours: Mon-Fri 10am-6pm, Sat 10am-2pm',
+    NULL,
+    NULL,
+    false
+),
+
+-- 36. Belcourt Theatre
+(
+    'Belcourt Theatre',
+    NULL,
+    NULL,
+    NULL,
+    '2102 Belcourt Ave',
+    'Nashville',
+    'TN',
+    '37212',
+    'USA',
+    'Historic theater featuring films and occasional live music events',
+    600,
+    ARRAY['Indie', 'Alternative', 'Experimental'],
+    'Theater',
+    'Primarily a cinema but hosts live music events',
+    NULL,
+    NULL,
+    false
+),
+
+-- 37. Topgolf Nashville
+(
+    'Topgolf Nashville (The Cowan)',
+    NULL,
+    NULL,
+    NULL,
+    '505 Deaderick St',
+    'Nashville',
+    'TN',
+    '37243',
+    'USA',
+    'Entertainment venue with golf, dining, and live music',
+    500,
+    ARRAY['Rock', 'Country', 'Pop'],
+    'Entertainment Venue',
+    'Multi-purpose entertainment complex',
+    NULL,
+    NULL,
+    false
+),
+
+-- 38. War Memorial Auditorium
+(
+    'War Memorial Auditorium',
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Historic auditorium for concerts and performing arts',
+    2000,
+    ARRAY['Rock', 'Country', 'Classical'],
+    'Auditorium',
+    'Part of Tennessee Performing Arts Center complex',
+    NULL,
+    NULL,
+    false
+),
+
+-- 39. Eastside Bowl
+(
+    'Eastside Bowl',
+    'info@eastsidebowl.com',
+    '615-636-9093',
+    'https://eastsidebowl.com',
+    '1508 Gallatin Pike S',
+    'Nashville',
+    'TN',
+    '37115',
+    'USA',
+    'Bowling alley, bar, and music venue in East Nashville',
+    300,
+    ARRAY['Rock', 'Indie', 'Alternative', 'Punk'],
+    'Bar/Club',
+    'Combination bowling alley and music venue',
+    NULL,
+    'https://www.facebook.com/eastsidebowl/',
+    false
+),
+
+-- 40. Dee''s Country Cocktail Lounge
+(
+    'Dee''s Country Cocktail Lounge',
+    'info@deeslounge.com',
+    '615-852-8827',
+    'https://deeslounge.com',
+    '102 E Palestine Ave',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Classic dive bar featuring live country music',
+    150,
+    ARRAY['Country', 'Honky Tonk'],
+    'Bar/Club',
+    'Authentic local dive bar atmosphere',
+    NULL,
+    'https://www.facebook.com/deeslounge615/',
+    false
+),
+
+-- 41. Santa''s Pub
+(
+    'Santa''s Pub',
+    'santa@santaspub.com',
+    '615-593-1872',
+    'https://www.santaspub.com',
+    '2225 Bransford Ave',
+    'Nashville',
+    'TN',
+    '37204',
+    'USA',
+    'Quirky double-wide trailer bar featuring karaoke and live music',
+    75,
+    ARRAY['Rock', 'Country', 'Karaoke'],
+    'Bar/Club',
+    'Unique venue in a double-wide trailer, known for karaoke',
+    NULL,
+    NULL,
+    false
+),
+
+-- 42. Germantown Cafe
+(
+    'Germantown Cafe',
+    NULL,
+    NULL,
+    'https://germantowncafe.com',
+    '1200 5th Ave N',
+    'Nashville',
+    'TN',
+    '37208',
+    'USA',
+    'Neighborhood bar and restaurant with occasional live music',
+    200,
+    ARRAY['Rock', 'Indie', 'Alternative'],
+    'Bar/Club',
+    'Bar + restaurant for over 20 years in Germantown',
+    NULL,
+    NULL,
+    false
+),
+
+-- 43. Zanies Nashville Comedy Club
+(
+    'Zanies Nashville Comedy Club',
+    'info@zanies.com',
+    '615-269-0221',
+    'https://nashville.zanies.com',
+    '2025 8th Avenue South',
+    'Nashville',
+    'TN',
+    '37204',
+    'USA',
+    'Stand-up comedy club with occasional musical performances',
+    300,
+    ARRAY['Comedy'],
+    'Comedy Club',
+    'Primarily comedy but hosts music events',
+    NULL,
+    'https://www.facebook.com/zanies/',
+    false
+),
+
+-- 44. Whiskey Jam
+(
+    'Whiskey Jam',
+    'booking@whiskeyjam.com',
+    NULL,
+    'https://www.whiskeyjam.com',
+    'Dierks Bentley''s Whiskey Row',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Monday night concert series featuring emerging country artists',
+    400,
+    ARRAY['Country', 'Americana'],
+    'Music Venue',
+    'Popular weekly showcase event',
+    NULL,
+    'https://www.facebook.com/WhiskeyJam/',
+    false
+),
+
+-- 45. Losers Bar & Grill - Downtown
+(
+    'Losers Bar & Grill - Downtown',
+    'info@losersdowntown.com',
+    '615-736-5050',
+    'https://losersdowntown.com',
+    '111 4th Ave S',
+    'Nashville',
+    'TN',
+    '37203',
+    'USA',
+    'Dive bar featuring live music and sports',
+    200,
+    ARRAY['Rock', 'Country', 'Indie'],
+    'Bar/Club',
+    'Popular local dive bar',
+    NULL,
+    'https://www.facebook.com/losers.nashville/',
+    false
+),
+
+-- 46. Losers Bar & Grill - Midtown
+(
+    'Losers Bar & Grill - Midtown',
+    NULL,
+    '615-327-3115',
+    'https://www.losersmidtown.com',
+    '1911 Division St',
+    'Nashville',
+    'TN',
+    '37203',
+    'USA',
+    'Midtown location of popular dive bar, hosts Whiskey Jam',
+    250,
+    ARRAY['Rock', 'Country', 'Indie'],
+    'Bar/Club',
+    'Hosts Whiskey Jam events',
+    NULL,
+    NULL,
+    false
+),
+
+-- 47. Dino''s Bar
+(
+    'Dino''s Bar',
+    'dinosnashville@gmail.com',
+    '615-226-3566',
+    'https://dinosnashville.com',
+    '411 Gallatin Ave',
+    'Nashville',
+    'TN',
+    '37206',
+    'USA',
+    'East Nashville dive bar known for burgers and live music',
+    100,
+    ARRAY['Rock', 'Punk', 'Indie', 'Alternative'],
+    'Bar/Club',
+    'Famous for great burgers and intimate shows',
+    NULL,
+    NULL,
+    false
+),
+
+-- 48. The Local Nashville
+(
+    'The Local Nashville',
+    'info@thelocalnash.com',
+    NULL,
+    NULL,
+    NULL,
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'Live music venue featuring local and touring acts',
+    200,
+    ARRAY['Rock', 'Indie', 'Alternative'],
+    'Music Venue',
+    'Bookings: booking@thelocalbooking.com',
+    NULL,
+    'https://www.facebook.com/thelocalnash/',
+    false
+),
+
+-- 49. TPAC (Tennessee Performing Arts Center)
+(
+    'TPAC (Tennessee Performing Arts Center)',
+    'venuesales@tpac.org',
+    '615-782-4000',
+    'https://www.tpac.org',
+    '505 Deaderick Street',
+    'Nashville',
+    'TN',
+    '37243',
+    'USA',
+    'Major performing arts center with multiple theaters',
+    2472,
+    ARRAY['Theater', 'Classical', 'Jazz', 'Broadway'],
+    'Theater',
+    'Box Office: 615-782-4040. Programming: clyhus@tpac.org',
+    NULL,
+    NULL,
+    false
+),
+
+-- 50. The Cobra Nashville
+(
+    'The Cobra Nashville',
+    NULL,
+    NULL,
+    'https://cobranashville.com',
+    'Gallatin Road',
+    'Nashville',
+    'TN',
+    NULL,
+    'USA',
+    'East Nashville bar and music venue',
+    200,
+    ARRAY['Rock', 'Punk', 'Indie', 'Alternative'],
+    'Bar/Club',
+    '18+, Open 3pm-3am daily. Production fee: $225',
+    NULL,
+    NULL,
+    false
+);
+
+COMMIT;
