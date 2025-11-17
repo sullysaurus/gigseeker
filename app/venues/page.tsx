@@ -59,7 +59,9 @@ export default function VenuesPage() {
   const [addingVenueId, setAddingVenueId] = useState<string | null>(null)
   const [user, setUser] = useState<any>(null)
   const [credits, setCredits] = useState(10)
+  const [subscriptionTier, setSubscriptionTier] = useState<'free' | 'pro' | 'agency'>('free')
   const [initialLoading, setInitialLoading] = useState(true)
+  const [showFilters, setShowFilters] = useState(false)
 
   // Load user and credits on mount
   useEffect(() => {
@@ -71,15 +73,16 @@ export default function VenuesPage() {
       if (currentUser) {
         setUser(currentUser)
 
-        // Get user profile for credits
+        // Get user profile for AI credits and subscription tier
         const { data: profile } = await supabase
           .from('profiles')
-          .select('credits_balance')
+          .select('ai_credits_balance, subscription_tier')
           .eq('user_id', currentUser.id)
           .maybeSingle()
 
         if (profile) {
-          setCredits(profile.credits_balance)
+          setCredits(profile.ai_credits_balance)
+          setSubscriptionTier(profile.subscription_tier || 'free')
         }
       }
 
@@ -205,21 +208,31 @@ export default function VenuesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation user={user} creditsBalance={credits} />
+      <Navigation user={user} aiCreditsBalance={credits} subscriptionTier={subscriptionTier} />
 
-      <main className="p-4 md:p-8">
+      <main className="px-4 py-6 md:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl md:text-5xl font-black mb-2">VENUE DATABASE</h1>
-            <p className="text-gray-600">Search and add venues to your booking pipeline</p>
+          <div className="mb-6 md:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-2">VENUE DATABASE</h1>
+              <p className="text-sm md:text-base text-gray-600">Search and add venues to your booking pipeline</p>
+            </div>
+
+            {/* Mobile Filter Button */}
+            <button
+              onClick={() => setShowFilters(true)}
+              className="md:hidden border-2 border-black bg-black text-white px-4 py-3 font-bold hover:bg-accent-blue transition-colors"
+            >
+              🔍 FILTERS {selectedGenres.length > 0 && `(${selectedGenres.length})`}
+            </button>
           </div>
 
-        {/* Search Filters */}
-        <div className="bg-white border-3 border-black shadow-brutalist p-6 mb-6">
+        {/* Desktop Filters */}
+        <div className="hidden md:block bg-white border-3 border-black shadow-brutalist p-4 md:p-6 mb-6">
           <div className="space-y-4">
             {/* Text Filters */}
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
               <div>
                 <label className="block font-bold mb-2 text-sm">SEARCH</label>
                 <input
@@ -259,13 +272,13 @@ export default function VenuesPage() {
 
             {/* Genre Filters */}
             <div>
-              <label className="block font-bold mb-2 text-sm">GENRES</label>
-              <div className="flex flex-wrap gap-2">
+              <label className="block font-bold mb-2 text-xs sm:text-sm">GENRES</label>
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {GENRES.map(genre => (
                   <button
                     key={genre}
                     onClick={() => toggleGenre(genre)}
-                    className={`px-3 py-1 border-2 border-black font-bold text-sm transition-colors ${
+                    className={`px-2.5 py-1.5 sm:px-3 sm:py-2 border-2 border-black font-bold text-xs sm:text-sm transition-colors ${
                       selectedGenres.includes(genre)
                         ? 'bg-black text-white'
                         : 'bg-white text-black hover:bg-gray-100'
@@ -278,17 +291,17 @@ export default function VenuesPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <button
                 onClick={() => handleSearch(0)}
                 disabled={loading}
-                className="flex-1 border-2 border-black bg-black text-white px-6 py-3 font-bold hover:bg-white hover:text-black transition-colors disabled:opacity-50"
+                className="flex-1 border-2 border-black bg-black text-white px-4 sm:px-6 py-3 font-bold text-sm sm:text-base hover:bg-white hover:text-black transition-colors disabled:opacity-50"
               >
                 {loading ? 'SEARCHING...' : 'SEARCH VENUES'}
               </button>
               <button
                 onClick={handleClearFilters}
-                className="border-2 border-black bg-white text-black px-6 py-3 font-bold hover:bg-gray-100 transition-colors"
+                className="border-2 border-black bg-white text-black px-4 sm:px-6 py-3 font-bold text-sm sm:text-base hover:bg-gray-100 transition-colors"
               >
                 CLEAR
               </button>
@@ -310,14 +323,14 @@ export default function VenuesPage() {
           </div>
         ) : venues.length === 0 ? (
           <div className="text-center py-12 text-gray-400 border-2 border-gray-200">
-            <p className="text-lg font-bold mb-2">No venues found</p>
-            <p className="text-sm">Try searching or adjusting your filters</p>
+            <p className="text-base sm:text-lg font-bold mb-2">No venues found</p>
+            <p className="text-xs sm:text-sm">Try searching or adjusting your filters</p>
           </div>
         ) : (
-          <div className="space-y-4 mb-6">
+          <div className="space-y-3 sm:space-y-4 mb-6">
             {venues.map(venue => (
-              <div key={venue.id} className="border-2 border-black p-4 hover:shadow-brutalist transition-shadow">
-                <div className="flex justify-between items-start gap-4">
+              <div key={venue.id} className="border-2 border-black p-3 sm:p-4 hover:shadow-brutalist transition-shadow">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
                   {/* Venue Info */}
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-2">
@@ -368,7 +381,7 @@ export default function VenuesPage() {
                   <button
                     onClick={() => handleAddVenue(venue.id)}
                     disabled={addingVenueId === venue.id}
-                    className="border-2 border-black bg-black text-white px-6 py-3 font-bold hover:bg-white hover:text-black transition-colors disabled:opacity-50 whitespace-nowrap"
+                    className="w-full sm:w-auto border-2 border-black bg-black text-white px-4 sm:px-6 py-2.5 sm:py-3 font-bold text-sm sm:text-base hover:bg-white hover:text-black transition-colors disabled:opacity-50"
                   >
                     {addingVenueId === venue.id ? 'ADDING...' : '+ ADD TO PIPELINE'}
                   </button>
@@ -440,6 +453,105 @@ export default function VenuesPage() {
         </div>
         </div>
       </main>
+
+      {/* Mobile Filter Modal */}
+      {showFilters && (
+        <div className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end">
+          <div className="bg-white w-full max-h-[90vh] overflow-y-auto border-t-3 border-black animate-slide-up">
+            <div className="sticky top-0 bg-white border-b-2 border-black p-4 flex justify-between items-center z-10">
+              <h2 className="font-black text-xl">FILTERS</h2>
+              <button
+                onClick={() => setShowFilters(false)}
+                className="text-2xl font-black leading-none"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-4 space-y-4">
+              {/* Text Filters */}
+              <div>
+                <label className="block font-bold mb-2 text-sm">SEARCH</label>
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="w-full border-2 border-black p-2 font-mono"
+                  placeholder="Venue name..."
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold mb-2 text-sm">CITY</label>
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="w-full border-2 border-black p-2 font-mono"
+                  placeholder="Raleigh, Durham..."
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold mb-2 text-sm">STATE</label>
+                <select
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                  className="w-full border-2 border-black p-2 font-mono"
+                >
+                  <option value="">All States</option>
+                  {US_STATES.map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Genre Filters */}
+              <div>
+                <label className="block font-bold mb-2 text-xs sm:text-sm">GENRES</label>
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                  {GENRES.map(genre => (
+                    <button
+                      key={genre}
+                      onClick={() => toggleGenre(genre)}
+                      className={`px-2.5 py-1.5 sm:px-3 sm:py-2 border-2 border-black font-bold text-xs sm:text-sm transition-colors ${
+                        selectedGenres.includes(genre)
+                          ? 'bg-black text-white'
+                          : 'bg-white text-black hover:bg-gray-100'
+                      }`}
+                    >
+                      {capitalizeGenre(genre)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col gap-2 pt-4">
+                <button
+                  onClick={() => {
+                    handleSearch(0)
+                    setShowFilters(false)
+                  }}
+                  disabled={loading}
+                  className="w-full border-2 border-black bg-black text-white px-4 py-3 font-bold text-sm hover:bg-accent-blue transition-colors disabled:opacity-50"
+                >
+                  {loading ? 'SEARCHING...' : 'SEARCH VENUES'}
+                </button>
+                <button
+                  onClick={() => {
+                    handleClearFilters()
+                    setShowFilters(false)
+                  }}
+                  className="w-full border-2 border-black bg-white text-black px-4 py-3 font-bold text-sm hover:bg-gray-100 transition-colors"
+                >
+                  CLEAR FILTERS
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

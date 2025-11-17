@@ -31,25 +31,16 @@ export async function POST(request: Request) {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('credits_balance, display_name, booking_email')
+      .select('subscription_tier, display_name, booking_email')
       .eq('user_id', user.id)
       .single()
 
-    if (!profile || profile.credits_balance < 1) {
-      return NextResponse.json({ error: 'Insufficient credits' }, { status: 402 })
-    }
-
-    // Deduct 1 credit
-    const { data: deductResult, error: deductError } = await supabase.rpc('deduct_credits', {
-      p_user_id: user.id,
-      p_amount: 1,
-      p_transaction_type: 'email_sent',
-      p_description: `Email sent to ${pipelineVenue.venues.name}`,
-      p_metadata: { pipeline_venue_id: pipelineVenueId },
-    })
-
-    if (deductError || !deductResult) {
-      return NextResponse.json({ error: 'Failed to deduct credits' }, { status: 500 })
+    // Check subscription tier - only Pro/Agency can send emails
+    if (!profile || !['pro', 'agency'].includes(profile.subscription_tier)) {
+      return NextResponse.json({
+        error: 'Email sending requires Pro or Agency subscription',
+        requiresUpgrade: true
+      }, { status: 402 })
     }
 
     // Send email via Resend
@@ -64,14 +55,6 @@ export async function POST(request: Request) {
     })
 
     if (emailError || !emailData) {
-      // Refund credit on failure
-      await supabase.rpc('add_credits', {
-        p_user_id: user.id,
-        p_amount: 1,
-        p_transaction_type: 'refund',
-        p_description: 'Refund for failed email',
-      })
-
       return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
     }
 
@@ -86,20 +69,29 @@ export async function POST(request: Request) {
       .eq('id', pipelineVenueId)
 
     // Create email campaign record
-    await supabase.from('email_campaigns').insert({
+    const { data: campaign } = await supabase.from('email_campaigns').insert({
       user_id: user.id,
       pipeline_venue_id: pipelineVenueId,
       venue_id: pipelineVenue.venue_id,
       subject,
       body_text: body,
       recipient_email: pipelineVenue.venues.email,
-      resend_email_id: emailData.id,
       status: 'sent',
+    }).select().single()
+
+    // Record email usage (for Pro tier tracking)
+    await supabase.rpc('record_email_send', {
+      p_user_id: user.id,
+      p_email_campaign_id: campaign?.id,
+      p_venue_id: pipelineVenue.venue_id,
+      p_recipient_email: pipelineVenue.venues.email,
+      p_subject: subject,
+      p_metadata: { resend_email_id: emailData.id }
     })
 
     return NextResponse.json({
       success: true,
-      creditsRemaining: profile.credits_balance - 1,
+      subscriptionTier: profile.subscription_tier,
     })
   } catch (error) {
     console.error('Send email error:', error)

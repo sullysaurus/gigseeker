@@ -30,6 +30,7 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
   const [credits, setCredits] = useState(10)
+  const [subscriptionTier, setSubscriptionTier] = useState<'free' | 'pro' | 'agency'>('free')
 
   useEffect(() => {
     loadData()
@@ -49,15 +50,16 @@ export default function HistoryPage() {
     }
     setUser(currentUser)
 
-    // Get credits
+    // Get AI credits and subscription tier
     const { data: profile } = await supabase
       .from('profiles')
-      .select('credits_balance')
+      .select('ai_credits_balance, subscription_tier')
       .eq('user_id', currentUser.id)
       .maybeSingle()
 
     if (profile) {
-      setCredits(profile.credits_balance)
+      setCredits(profile.ai_credits_balance)
+      setSubscriptionTier(profile.subscription_tier || 'free')
     }
 
     // Load archived/declined venues
@@ -150,7 +152,7 @@ export default function HistoryPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation user={user} creditsBalance={credits} />
+      <Navigation user={user} aiCreditsBalance={credits} subscriptionTier={subscriptionTier} />
 
       <main className="p-4 md:p-8">
         <div className="max-w-7xl mx-auto">

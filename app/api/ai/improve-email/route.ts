@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
   try {
-    const { prompt, venueName, venueId, pipelineVenueId } = await request.json()
+    const { emailDraft, venueName, improvementFocus, venueId, pipelineVenueId } = await request.json()
 
     const supabase = await createClient()
 
@@ -22,11 +22,11 @@ export async function POST(request: Request) {
       .eq('user_id', user.id)
       .single()
 
-    const creditCost = getAICreditCost('email_generation')
+    const creditCost = getAICreditCost('email_improvement')
 
     if (!profile || profile.ai_credits_balance < creditCost) {
       return NextResponse.json({
-        error: `Insufficient AI credits. Need ${creditCost} credits, have ${profile?.ai_credits_balance || 0}.`,
+        error: `Insufficient AI credits. Need ${creditCost} credit, have ${profile?.ai_credits_balance || 0}.`,
         requiresCredits: true,
         creditsNeeded: creditCost,
         creditsAvailable: profile?.ai_credits_balance || 0
@@ -38,21 +38,32 @@ export async function POST(request: Request) {
       console.log('🧪 [TESTING MODE] Using mock AI responses - no API costs!')
     }
 
-    const fullPrompt = `You are an expert music industry email writer. Write professional, personalized venue booking emails for musicians.
+    const fullPrompt = `You are an expert music industry email writer. Improve this venue booking email draft.
+
+Current Draft:
+Subject: ${emailDraft.subject}
+
+Body:
+${emailDraft.body}
+
+Venue: ${venueName}
+
+${improvementFocus ? `Focus on improving: ${improvementFocus}` : 'Focus on: clarity, professionalism, and persuasiveness'}
+
+Instructions:
+- Keep the core message and intent
+- Make it more professional and compelling
+- Fix any grammar or tone issues
+- Keep it concise (under 200 words)
+- Maintain authenticity (sound like a real person, not robotic)
 
 Always respond with valid JSON in this exact format:
-{"subject": "Email subject line", "body": "Email body text"}
-
-Keep emails concise (under 200 words), professional but friendly, and include a clear call-to-action.
-
-Write a venue booking email for ${venueName}.
-
-User request: ${prompt}
+{"subject": "Improved subject line", "body": "Improved email body"}
 
 Return JSON only.`
 
     const responseText = await generateAIResponse({
-      actionType: 'email_generation',
+      actionType: 'email_improvement',
       prompt: fullPrompt,
       temperature: 0.7,
       maxTokens: 1024,
@@ -75,19 +86,19 @@ Return JSON only.`
     try {
       await supabase.rpc('record_ai_action', {
         p_user_id: user.id,
-        p_action_type: 'email_generation',
+        p_action_type: 'email_improvement',
         p_credits_cost: creditCost,
         p_venue_id: venueId || null,
         p_pipeline_venue_id: pipelineVenueId || null,
         p_success: true,
         p_metadata: {
           venue_name: venueName,
+          improvement_focus: improvementFocus,
           mock_mode: isAIMockMode()
         }
       })
     } catch (creditError) {
       console.error('Failed to record AI action:', creditError)
-      // Don't fail the request if recording fails, but log it
     }
 
     // Get updated credit balance
@@ -98,16 +109,16 @@ Return JSON only.`
       .single()
 
     return NextResponse.json({
-      subject: emailData.subject || 'Booking Inquiry',
+      subject: emailData.subject || emailDraft.subject,
       body: emailData.body || responseText,
-      mockMode: isAIMockMode(), // Let frontend know if using mock data
+      mockMode: isAIMockMode(),
       creditsRemaining: updatedProfile?.ai_credits_balance || 0,
       creditsUsed: creditCost
     })
   } catch (error) {
-    console.error('AI generation error:', error)
+    console.error('AI improvement error:', error)
     return NextResponse.json(
-      { error: 'Failed to generate email' },
+      { error: 'Failed to improve email' },
       { status: 500 }
     )
   }

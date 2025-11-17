@@ -34,6 +34,35 @@ export async function POST(request: Request) {
       pipelineId = pipeline.id
     }
 
+    // Check if user can add more venues to pipeline
+    const { data: canAdd, error: limitError } = await supabase.rpc('can_add_venue_to_pipeline', {
+      p_user_id: user.id
+    })
+
+    if (limitError) {
+      console.error('Error checking venue limit:', limitError)
+    }
+
+    if (canAdd === false) {
+      // Get current count and limit for error message
+      const { data: venueCount } = await supabase.rpc('get_pipeline_venue_count', {
+        p_user_id: user.id
+      })
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('max_pipeline_venues, subscription_tier')
+        .eq('user_id', user.id)
+        .single()
+
+      return NextResponse.json({
+        error: `Venue limit reached (${venueCount}/${profile?.max_pipeline_venues || 20}). Upgrade to Pro for unlimited venues.`,
+        requiresUpgrade: true,
+        currentCount: venueCount,
+        maxCount: profile?.max_pipeline_venues,
+        subscriptionTier: profile?.subscription_tier
+      }, { status: 402 })
+    }
+
     // Check for duplicates
     const { data: existing } = await supabase
       .from('pipeline_venues')

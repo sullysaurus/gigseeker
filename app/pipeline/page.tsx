@@ -30,6 +30,7 @@ interface Venue {
 export default function PipelinePage() {
   const [venues, setVenues] = useState<Venue[]>([])
   const [credits, setCredits] = useState(10)
+  const [subscriptionTier, setSubscriptionTier] = useState<'free' | 'pro' | 'agency'>('free')
   const [showSearch, setShowSearch] = useState(false)
   const [showEmailComposer, setShowEmailComposer] = useState(false)
   const [showNotesModal, setShowNotesModal] = useState(false)
@@ -52,10 +53,10 @@ export default function PipelinePage() {
       }
       setUser(currentUser)
 
-      // Get user profile for credits
+      // Get user profile for AI credits and subscription tier
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('credits_balance')
+        .select('ai_credits_balance, subscription_tier')
         .eq('user_id', currentUser.id)
         .maybeSingle()
 
@@ -64,11 +65,13 @@ export default function PipelinePage() {
       }
 
       if (profile) {
-        setCredits(profile.credits_balance)
+        setCredits(profile.ai_credits_balance)
+        setSubscriptionTier(profile.subscription_tier || 'free')
       } else {
         // Profile doesn't exist, might be a new user without trigger setup
         console.warn('No profile found for user')
-        setCredits(10) // Default credits
+        setCredits(10) // Default AI credits
+        setSubscriptionTier('free')
       }
 
       // Get or create default pipeline
@@ -163,34 +166,58 @@ export default function PipelinePage() {
     setShowEmailComposer(true)
   }
 
-  const handleEmailSent = async (subject: string, body: string) => {
-    if (!selectedVenue?.pipeline_venue_id) return
+  const handleComposeBlankEmail = () => {
+    setSelectedVenue(null)
+    setShowEmailComposer(true)
+  }
 
+  const handleEmailSent = async (recipientEmail: string, subject: string, body: string) => {
     try {
-      const response = await fetch('/api/pipeline/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          pipelineVenueId: selectedVenue.pipeline_venue_id,
-          subject,
-          body,
-        }),
-      })
+      let response
+
+      if (selectedVenue?.pipeline_venue_id) {
+        // Sending to a pipeline venue
+        response = await fetch('/api/pipeline/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pipelineVenueId: selectedVenue.pipeline_venue_id,
+            subject,
+            body,
+          }),
+        })
+      } else {
+        // Sending a blank email (not tied to pipeline)
+        response = await fetch('/api/email/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            recipientEmail,
+            subject,
+            body,
+          }),
+        })
+      }
 
       const data = await response.json()
 
       if (response.ok) {
-        setCredits(data.creditsRemaining)
-        setVenues(prev =>
-          prev.map(v =>
-            v.id === selectedVenue.id ? { ...v, status: 'contacted' } : v
+        if (selectedVenue) {
+          setVenues(prev =>
+            prev.map(v =>
+              v.id === selectedVenue.id ? { ...v, status: 'contacted' } : v
+            )
           )
-        )
+        }
         setShowEmailComposer(false)
         setSelectedVenue(null)
         toast.success('Email sent successfully!')
       } else {
-        toast.error(data.error || 'Failed to send email')
+        if (data.requiresUpgrade) {
+          toast.error(data.error || 'Pro subscription required to send emails')
+        } else {
+          toast.error(data.error || 'Failed to send email')
+        }
       }
     } catch (error) {
       console.error('Failed to send email:', error)
@@ -364,34 +391,39 @@ export default function PipelinePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation user={user} creditsBalance={credits} />
+      <Navigation
+        user={user}
+        aiCreditsBalance={credits}
+        subscriptionTier={subscriptionTier}
+        onComposeEmail={handleComposeBlankEmail}
+      />
 
-      <main className="p-4 md:p-8">
+      <main className="px-4 py-6 md:p-8">
         <div className="max-w-[1800px] mx-auto">
-          <div className="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+          <div className="mb-6 md:mb-8 flex flex-col md:flex-row md:justify-between md:items-start lg:items-center gap-4">
             <div>
-              <h1 className="text-4xl md:text-5xl font-black mb-2">MY PIPELINE</h1>
-              <p className="text-gray-600">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-2">MY PIPELINE</h1>
+              <p className="text-sm md:text-base text-gray-600">
                 Track your venue outreach from discovery to booking
               </p>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <Link
                 href="/history"
-                className="btn-secondary shadow-brutalist inline-block text-center"
+                className="btn-secondary shadow-brutalist inline-block text-center text-sm sm:text-base py-2 sm:py-3"
               >
                 📦 HISTORY
               </Link>
               <Link
                 href="/venues"
-                className="btn-secondary shadow-brutalist inline-block text-center"
+                className="btn-secondary shadow-brutalist inline-block text-center text-sm sm:text-base py-2 sm:py-3"
               >
                 🔍 BROWSE VENUES
               </Link>
               <button
                 onClick={() => setShowSearch(true)}
-                className="btn-primary shadow-brutalist"
+                className="btn-primary shadow-brutalist text-sm sm:text-base py-2 sm:py-3"
               >
                 + QUICK ADD
               </button>
@@ -399,28 +431,28 @@ export default function PipelinePage() {
           </div>
 
           {/* Stats Cards */}
-          <div className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="card bg-white">
-              <div className="text-4xl font-black mb-1">{venues.length}</div>
-              <div className="text-sm font-bold text-gray-600">Total Venues</div>
+          <div className="mb-6 md:mb-8 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <div className="card bg-white p-4 md:p-6">
+              <div className="text-3xl md:text-4xl font-black mb-1">{venues.length}</div>
+              <div className="text-xs md:text-sm font-bold text-gray-600">Total Venues</div>
             </div>
-            <div className="card bg-accent-yellow">
-              <div className="text-4xl font-black mb-1">
+            <div className="card bg-accent-yellow p-4 md:p-6">
+              <div className="text-3xl md:text-4xl font-black mb-1">
                 {venues.filter(v => v.status === 'contacted').length}
               </div>
-              <div className="text-sm font-bold">Emails Sent</div>
+              <div className="text-xs md:text-sm font-bold">Emails Sent</div>
             </div>
-            <div className="card bg-accent-blue">
-              <div className="text-4xl font-black mb-1">
+            <div className="card bg-accent-blue p-4 md:p-6">
+              <div className="text-3xl md:text-4xl font-black mb-1">
                 {venues.filter(v => v.status === 'opened').length}
               </div>
-              <div className="text-sm font-bold">Emails Opened</div>
+              <div className="text-xs md:text-sm font-bold">Emails Opened</div>
             </div>
-            <div className="card bg-accent-green">
-              <div className="text-4xl font-black mb-1">
+            <div className="card bg-accent-green p-4 md:p-6">
+              <div className="text-3xl md:text-4xl font-black mb-1">
                 {venues.filter(v => v.status === 'booked').length}
               </div>
-              <div className="text-sm font-bold">Gigs Booked</div>
+              <div className="text-xs md:text-sm font-bold">Gigs Booked</div>
             </div>
           </div>
 
@@ -464,16 +496,19 @@ export default function PipelinePage() {
             />
           )}
 
-          {showEmailComposer && selectedVenue && (
+          {showEmailComposer && (
             <EmailComposer
-              venueName={selectedVenue.name}
-              venueEmail={selectedVenue.email}
+              venueName={selectedVenue?.name}
+              venueEmail={selectedVenue?.email}
+              venueId={selectedVenue?.id}
+              pipelineVenueId={selectedVenue?.pipeline_venue_id}
               creditsBalance={credits}
               onSend={handleEmailSent}
               onClose={() => {
                 setShowEmailComposer(false)
                 setSelectedVenue(null)
               }}
+              onCreditsUpdate={(newBalance) => setCredits(newBalance)}
             />
           )}
 
