@@ -250,7 +250,9 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
       const updates: any = {}
       Object.keys(approvedFields).forEach(key => {
         if (approvedFields[key]) {
-          updates[key] = enrichmentData[key]?.value
+          // Map facebook_handle to facebook_url if needed
+          const mappedKey = key === 'facebook_handle' ? 'facebook_url' : key
+          updates[mappedKey] = enrichmentData[key]?.value
         }
       })
 
@@ -314,7 +316,7 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
         is_verified: true,
       }))
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('venues')
         .insert(venuesWithVerified)
 
