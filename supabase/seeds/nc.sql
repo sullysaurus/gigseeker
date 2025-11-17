@@ -166,7 +166,7 @@ VALUES
 
  
 
-  ('Cocoa Cinnamon', 'Engage@CocoaCinnamon.com', '919-697-8990', 'https://cocoacinnamon.square.site', '420 West Geer Street', 'Durham', 'NC', '27701', 'USA', 'Coffee shop occasionally hosting live music and community events.', 75, ARRAY['Jazz', 'Folk', 'Acoustic'], 'Coffee Shop', NULL, NULL, 'https://www.facebook.com/CCHillsboroughRoad', false, now(), now()),
+  ('Cocoa Cinnamon', 'Engage@CocoaCinnamon.com', '919-697-8990', 'https://cocoacinnamon.square.site', '420 West Geer Street', 'Durham', 'NC', '27701', 'USA', 'Coffee shop occasionally hosting live music and community events.', 75, ARRAY['Jazz', 'Folk', 'Acoustic'], 'coffee_shop', NULL, NULL, 'https://www.facebook.com/CCHillsboroughRoad', false, now(), now()),
 
  
 
