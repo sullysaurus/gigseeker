@@ -44,11 +44,28 @@ export async function POST(request: Request) {
     }
 
     // Send email via Resend
+    const fromEmail = process.env.FROM_EMAIL || 'bookings@booking.gigseeker.pro'
+    const replyToEmail = profile.booking_email || user.email
+
+    // Convert plain text to HTML with clickable links for tracking
+    const htmlBody = body
+      .split('\n')
+      .map((line: string) => line.trim())
+      .map((line: string) => {
+        // Convert URLs to clickable links
+        const urlRegex = /(https?:\/\/[^\s]+)/g
+        return line.replace(urlRegex, '<a href="$1">$1</a>')
+      })
+      .map((line: string) => line ? `<p>${line}</p>` : '<br>')
+      .join('\n')
+
     const { data: emailData, error: emailError } = await resend.emails.send({
-      from: `${profile.display_name || 'Gigseeker User'} <onboarding@resend.dev>`,
+      from: fromEmail,
       to: pipelineVenue.venues.email,
+      replyTo: replyToEmail,
       subject,
-      text: body,
+      html: htmlBody,  // HTML for click tracking
+      text: body,      // Plain text fallback
       tags: [
         { name: 'pipeline_venue_id', value: pipelineVenueId },
       ],
