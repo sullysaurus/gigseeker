@@ -24,8 +24,8 @@ interface Venue {
   email: string
   phone: string
   website: string
-  venue_type: string[]
-  genres: string[]
+  venue_type: string  // Single value: 'bar', 'club', 'theater', etc.
+  music_focus: string[]  // Array of genres
   capacity: number
   booking_email: string
   created_at: string
@@ -419,17 +419,17 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
                         </td>
                         <td className="border-2 border-black p-2 text-center">{v.capacity || '-'}</td>
                         <td className="border-2 border-black p-2 whitespace-nowrap">
-                          {v.venue_type?.length > 0 ? v.venue_type.join(', ') : '-'}
+                          {v.venue_type || '-'}
                         </td>
                         <td className="border-2 border-black p-2 max-w-xs">
                           <div className="flex flex-wrap gap-1">
-                            {v.genres?.slice(0, 3).map((g, i) => (
+                            {v.music_focus?.slice(0, 3).map((g, i) => (
                               <span key={i} className="text-xs px-1 py-0.5 bg-gray-200 border border-gray-400 whitespace-nowrap">
                                 {g}
                               </span>
                             ))}
-                            {v.genres?.length > 3 && (
-                              <span className="text-xs text-gray-500">+{v.genres.length - 3}</span>
+                            {v.music_focus?.length > 3 && (
+                              <span className="text-xs text-gray-500">+{v.music_focus.length - 3}</span>
                             )}
                           </div>
                         </td>
@@ -501,8 +501,8 @@ function VenueForm({ venue, onSave, onClose }: VenueFormProps) {
       website: '',
       booking_email: '',
       capacity: 0,
-      venue_type: [],
-      genres: [],
+      venue_type: '',
+      music_focus: [],
     }
   )
 

@@ -23,10 +23,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check subscription tier - must be Pro or Agency
+    // Check subscription tier and rate limits
     const { data: profile } = await supabase
       .from('profiles')
-      .select('subscription_tier, display_name, booking_email')
+      .select('subscription_tier, display_name, booking_email, daily_email_count, last_email_date')
       .eq('user_id', user.id)
       .single()
 
@@ -35,6 +35,27 @@ export async function POST(request: Request) {
         error: 'Email sending requires Pro or Agency subscription',
         requiresUpgrade: true
       }, { status: 402 })
+    }
+
+    // Check rate limits
+    const { data: canSendData, error: canSendError } = await supabase.rpc('can_send_email_with_limit', {
+      p_user_id: user.id
+    })
+
+    if (canSendError || !canSendData) {
+      const { data: remainingData } = await supabase.rpc('get_remaining_emails', {
+        p_user_id: user.id
+      })
+
+      const remaining = remainingData || 0
+      const limit = profile.subscription_tier === 'pro' ? 100 : 500
+
+      return NextResponse.json({
+        error: `Daily email limit reached (${limit} emails/day). ${remaining} remaining today.`,
+        dailyLimit: limit,
+        remaining: remaining,
+        rateLimitExceeded: true
+      }, { status: 429 })
     }
 
     // Send email via Resend
