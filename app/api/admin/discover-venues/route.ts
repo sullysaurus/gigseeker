@@ -109,7 +109,7 @@ Return valid JSON only, no markdown formatting.`
 
     // Call Claude with web search
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20240620',
+      model: 'claude-3-opus-20240229',
       max_tokens: 8192,
       messages: [{
         role: 'user',
