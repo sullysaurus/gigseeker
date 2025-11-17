@@ -10,7 +10,15 @@ from datetime import datetime
 
 def normalize_name(name):
     """Normalize venue name for comparison"""
-    return name.lower().strip().replace("the ", "").replace("'", "")
+    # Remove common prefixes and punctuation for better matching
+    name = name.lower().strip()
+    name = name.replace("the ", "").replace("'", "").replace("'", "")
+    name = name.replace(" music hall", "").replace(" music house", "")
+    name = name.replace(" theatre", "").replace(" theater", "")
+    name = name.replace(" tavern", "").replace(" bar", "").replace(" club", "")
+    name = name.replace(" brewery", "").replace(" brewing", "")
+    name = name.replace("  ", " ").strip()
+    return name
 
 def load_venues(filepath):
     """Load venues from CSV"""

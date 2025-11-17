@@ -1,7 +1,7 @@
 -- Generated Venues Insert Script
 -- Cleaned and deduplicated venue data
--- Total venues: 127
--- Generated: 2025-11-17 15:03:10.700691
+-- Total venues: 124
+-- Generated: 2025-11-17 15:11:41.017903
 
 BEGIN;
 
@@ -572,7 +572,7 @@ ON CONFLICT (id) DO UPDATE SET
   venue_type = EXCLUDED.venue_type,
   is_verified = EXCLUDED.is_verified;
 
--- Charlotte, NC venues (17 venues)
+-- Charlotte, NC venues (16 venues)
 INSERT INTO public.venues (id, name, email, phone, website, address, city, state, zip_code, country, description, capacity, music_focus, venue_type, booking_notes, instagram_handle, facebook_url, is_verified)
 VALUES ('3e4d23a1-7cb6-46d3-9191-9ae1e2f97699', 'The Fillmore Charlotte', 'FillmoreCLT.info@livenation.com', '980-266-6454', 'https://www.fillmorenc.com', '820 Hamilton Street', 'Charlotte', 'NC', '28206', 'USA', 'Multi-level music venue housed in a 100-year-old fiber mill, part of the NC Music Factory entertainment complex.', 2000, ARRAY['rock', 'alternative', 'indie', 'hip-hop', 'electronic']::text[], 'other', 'Operated by Live Nation. Contact for private events and bookings.', '@fillmorenc', 'https://www.facebook.com/FillmoreNC', true)
 ON CONFLICT (id) DO UPDATE SET
@@ -655,10 +655,12 @@ ON CONFLICT (id) DO UPDATE SET
   booking_notes = EXCLUDED.booking_notes,
   is_verified = EXCLUDED.is_verified;
 
-INSERT INTO public.venues (id, name, website, address, city, state, zip_code, country, description, capacity, music_focus, venue_type, is_verified)
-VALUES ('824d9bf1-7e75-4fc9-ac2a-31adde3e0ccd', 'Visulite Theatre', 'https://visulite.com', '1615 Elizabeth Avenue', 'Charlotte', 'NC', '28204', 'USA', 'Historic theatre in Elizabeth neighborhood with unique multi-tiered stage and seating arrangement.', 540, ARRAY['rock', 'indie', 'alternative', 'electronic']::text[], 'other', true)
+INSERT INTO public.venues (id, name, email, phone, website, address, city, state, zip_code, country, description, capacity, music_focus, venue_type, is_verified)
+VALUES ('824d9bf1-7e75-4fc9-ac2a-31adde3e0ccd', 'Visulite Theatre', 'info@visulitetheatre.com', '704-358-9200', 'https://visulite.com', '1615 Elizabeth Avenue', 'Charlotte', 'NC', '28204', 'USA', 'Historic theatre in Elizabeth neighborhood with unique multi-tiered stage and seating arrangement.', 700, ARRAY['alternative', 'electronic', 'indie', 'rock', 'alternative', 'indie', 'original', 'rock']::text[], 'other', true)
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
+  email = EXCLUDED.email,
+  phone = EXCLUDED.phone,
   website = EXCLUDED.website,
   address = EXCLUDED.address,
   city = EXCLUDED.city,
@@ -855,22 +857,6 @@ ON CONFLICT (id) DO UPDATE SET
   venue_type = EXCLUDED.venue_type,
   is_verified = EXCLUDED.is_verified;
 
-INSERT INTO public.venues (id, name, email, phone, website, city, state, country, description, capacity, music_focus, venue_type, is_verified)
-VALUES ('8f4ee7e7-080a-4a1f-b523-581935a42730', 'Visulite Theater', 'info@visulitetheatre.com', '704-358-9200', 'https://www.visulitetheatre.com', 'Charlotte', 'NC', 'US', 'Historic theater in Elizabeth neighborhood hosting concerts and events.', 700, ARRAY['original', 'rock', 'indie', 'alternative']::text[], 'other', true)
-ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name,
-  email = EXCLUDED.email,
-  phone = EXCLUDED.phone,
-  website = EXCLUDED.website,
-  city = EXCLUDED.city,
-  state = EXCLUDED.state,
-  country = EXCLUDED.country,
-  description = EXCLUDED.description,
-  capacity = EXCLUDED.capacity,
-  music_focus = EXCLUDED.music_focus,
-  venue_type = EXCLUDED.venue_type,
-  is_verified = EXCLUDED.is_verified;
-
 -- Clayton, NC venues (1 venues)
 INSERT INTO public.venues (id, name, email, website, city, state, country, description, capacity, music_focus, venue_type, is_verified)
 VALUES ('28a1455a-18e0-44c6-af31-ce68c1e97c84', 'First Street Tavern', 'info@firststreettavern.com', 'https://www.firststreettavern.com', 'Clayton', 'NC', 'US', 'Local tavern featuring live music and community events.', 150, ARRAY['singer songwriter', 'rock', 'blues', 'country', 'covers']::text[], 'bar', true)
@@ -904,9 +890,9 @@ ON CONFLICT (id) DO UPDATE SET
   venue_type = EXCLUDED.venue_type,
   is_verified = EXCLUDED.is_verified;
 
--- Durham, NC venues (13 venues)
+-- Durham, NC venues (12 venues)
 INSERT INTO public.venues (id, name, email, phone, website, address, city, state, zip_code, country, description, capacity, music_focus, venue_type, booking_notes, instagram_handle, is_verified)
-VALUES ('35bff74f-3d97-4e4d-b9d8-6298bf4cae5f', 'Motorco Music Hall', 'booking@motorcomusic.com', '919-901-0875', 'https://motorcomusic.com', '723 Rigsbee Avenue', 'Durham', 'NC', '27701', 'US', 'Just outside Raleigh in Durham. Converted garage space with industrial vibe. Hosts indie, rock, and experimental music. Great local scene.', 450, ARRAY['electronic', 'hip-hop', 'indie', 'punk', 'rock']::text[], 'other', 'Email is best way to communicate.', '@motorcomh', true)
+VALUES ('35bff74f-3d97-4e4d-b9d8-6298bf4cae5f', 'Motorco Music Hall', 'booking@motorcomusic.com', '919-901-0875', 'https://motorcomusic.com', '723 Rigsbee Avenue', 'Durham', 'NC', '27701', 'US', 'Just outside Raleigh in Durham. Converted garage space with industrial vibe. Hosts indie, rock, and experimental music. Great local scene.', 450, ARRAY['electronic', 'hip-hop', 'indie', 'punk', 'rock', 'alternative', 'indie', 'original', 'rock']::text[], 'other', 'Email is best way to communicate.', '@motorcomh', true)
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   email = EXCLUDED.email,
@@ -1065,22 +1051,6 @@ VALUES ('404ed402-2ec3-4fdb-9ec5-9b94c8ea925d', 'Growler Grlz', 'info@growlergrl
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   email = EXCLUDED.email,
-  website = EXCLUDED.website,
-  city = EXCLUDED.city,
-  state = EXCLUDED.state,
-  country = EXCLUDED.country,
-  description = EXCLUDED.description,
-  capacity = EXCLUDED.capacity,
-  music_focus = EXCLUDED.music_focus,
-  venue_type = EXCLUDED.venue_type,
-  is_verified = EXCLUDED.is_verified;
-
-INSERT INTO public.venues (id, name, email, phone, website, city, state, country, description, capacity, music_focus, venue_type, is_verified)
-VALUES ('6bc14caa-3495-4a0d-b2a3-07e81ab651ed', 'Motorco', 'artist@motorcomusic.com', '919.901.0875', 'https://motorcomusic.com/', 'Durham', 'NC', 'US', 'Premier music hall in Durham featuring multiple spaces including a showroom, garage bar, and outdoor patio. Full bar and restaurant with diverse programming.', 400, ARRAY['rock', 'indie', 'alternative', 'original']::text[], 'bar', true)
-ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name,
-  email = EXCLUDED.email,
-  phone = EXCLUDED.phone,
   website = EXCLUDED.website,
   city = EXCLUDED.city,
   state = EXCLUDED.state,
@@ -1522,9 +1492,9 @@ ON CONFLICT (id) DO UPDATE SET
   venue_type = EXCLUDED.venue_type,
   is_verified = EXCLUDED.is_verified;
 
--- Raleigh, NC venues (23 venues)
+-- Raleigh, NC venues (22 venues)
 INSERT INTO public.venues (id, name, email, phone, website, address, city, state, zip_code, country, description, capacity, music_focus, venue_type, instagram_handle, facebook_url, is_verified)
-VALUES ('124831f7-38c0-4b3c-b24a-b1f95267f842', 'The Pour House Music Hall', 'booking@pourhouseraleigh.com', '919-821-1120', 'https://pourhouseraleigh.com', '224 S Blount Street', 'Raleigh', 'NC', '27601', 'US', 'Raleigh''s home for all things music featuring local and nationally touring bands. 20+ years showcasing rock, soul, jazz, hip-hop and Americana. Over 1,000 bands perform annually.', 400, ARRAY['alternative rock', 'americana', 'hip hop', 'indie', 'jam bands', 'jazz', 'metal', 'rock']::text[], 'other', '@thepourhouse', 'https://www.facebook.com/thepourhousemusichall', true)
+VALUES ('124831f7-38c0-4b3c-b24a-b1f95267f842', 'The Pour House Music Hall', 'booking@pourhouseraleigh.com', '919-821-1120', 'https://pourhouseraleigh.com', '224 S Blount Street', 'Raleigh', 'NC', '27601', 'US', 'Raleigh''s home for all things music featuring local and nationally touring bands. 20+ years showcasing rock, soul, jazz, hip-hop and Americana. Over 1,000 bands perform annually.', 600, ARRAY['alternative rock', 'americana', 'hip hop', 'indie', 'jam bands', 'jazz', 'metal', 'rock', 'alternative', 'indie', 'original', 'punk', 'rock']::text[], 'other', '@thepourhouse', 'https://www.facebook.com/thepourhousemusichall', true)
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   email = EXCLUDED.email,
@@ -1824,22 +1794,6 @@ VALUES ('09e9a0a1-d663-43cc-afe6-11d9391b2cfb', 'Tap Yard', 'events@tapyardralei
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   email = EXCLUDED.email,
-  website = EXCLUDED.website,
-  city = EXCLUDED.city,
-  state = EXCLUDED.state,
-  country = EXCLUDED.country,
-  description = EXCLUDED.description,
-  capacity = EXCLUDED.capacity,
-  music_focus = EXCLUDED.music_focus,
-  venue_type = EXCLUDED.venue_type,
-  is_verified = EXCLUDED.is_verified;
-
-INSERT INTO public.venues (id, name, email, phone, website, city, state, country, description, capacity, music_focus, venue_type, is_verified)
-VALUES ('f19f5157-c28c-49a9-a3d5-43f0b0cfb6df', 'The Pour House', 'booking@thepourhousemusichall.com', '919-821-1120', 'https://www.thepourhousemusichall.com', 'Raleigh', 'NC', 'US', 'Iconic Raleigh music venue operating since 1993. Known for hosting both emerging and established artists across rock, indie, and alternative genres. Features a full bar, stage, and intimate atmosphere.', 600, ARRAY['rock', 'indie', 'alternative', 'punk', 'original']::text[], 'bar', true)
-ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name,
-  email = EXCLUDED.email,
-  phone = EXCLUDED.phone,
   website = EXCLUDED.website,
   city = EXCLUDED.city,
   state = EXCLUDED.state,
