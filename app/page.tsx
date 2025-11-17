@@ -159,7 +159,7 @@ export default function Home() {
                   <span className="text-5xl font-black">$0</span>
                   <span className="text-gray-600">/month</span>
                 </div>
-                <p className="text-gray-700">Try it out</p>
+                <p className="text-gray-700">Build your pipeline</p>
               </div>
 
               <Link
@@ -172,23 +172,27 @@ export default function Home() {
               <div className="space-y-3 text-sm">
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span><strong>20 venues</strong> in pipeline</span>
+                  <span><strong>Search venues</strong></span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span>CRM pipeline tracking</span>
+                  <span><strong>Organize pipeline</strong></span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span>Email open tracking</span>
+                  <span><strong>Up to 20 venues</strong></span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span>3 email templates</span>
+                  <span>Track notes & status</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span>Basic venue search</span>
+                  <span>Plan your outreach</span>
+                </div>
+                <div className="flex items-start gap-2 opacity-40">
+                  <span className="font-bold">✗</span>
+                  <span>Send emails</span>
                 </div>
               </div>
             </div>
@@ -205,7 +209,7 @@ export default function Home() {
                   <span className="text-5xl font-black">$29</span>
                   <span className="text-gray-700">/month</span>
                 </div>
-                <p className="text-gray-900 font-bold">For working musicians</p>
+                <p className="text-gray-900 font-bold">Actually book shows</p>
               </div>
 
               <Link
@@ -218,31 +222,31 @@ export default function Home() {
               <div className="space-y-3 text-sm">
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
+                  <span><strong>Everything in Free</strong></span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span><strong>Send emails to venues</strong></span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span><strong>Track email opens</strong></span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-600 font-bold">✓</span>
                   <span><strong>Unlimited venues</strong></span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span><strong>Unlimited emails</strong></span>
+                  <span>20+ email templates</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span><strong>20+ email templates</strong></span>
+                  <span>Auto follow-up reminders</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span>Smart venue matching</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>Auto follow-up sequences</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>Email analytics dashboard</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>Calendar sync</span>
+                  <span>Email analytics</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
