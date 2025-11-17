@@ -81,6 +81,19 @@ Use web search to find any MISSING information. Return ONLY valid, verified data
 Return a JSON object with ONLY the fields you successfully found. Use null for fields you couldn't verify.
 Include a "confidence" field (0-100) for each piece of data.
 
+**IMPORTANT**: Use these EXACT field names to match the database schema:
+- phone (string)
+- email (string)
+- website (string)
+- address (string)
+- zip_code (string)
+- capacity (number)
+- venue_type (string: bar, club, theater, amphitheater, stadium, festival, or other)
+- music_focus (array of strings)
+- description (string)
+- instagram_handle (string - the @handle or full URL)
+- facebook_url (string - the full Facebook URL)
+
 Example:
 {
   "phone": { "value": "555-1234", "confidence": 95 },
@@ -89,6 +102,7 @@ Example:
   "venue_type": { "value": "club", "confidence": 90 },
   "music_focus": { "value": ["rock", "indie", "alternative"], "confidence": 85 },
   "instagram_handle": { "value": "@venuename", "confidence": 90 },
+  "facebook_url": { "value": "https://facebook.com/venuename", "confidence": 90 },
   "description": { "value": "Live music venue...", "confidence": 85 }
 }
 

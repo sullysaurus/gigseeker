@@ -250,8 +250,13 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
       const updates: any = {}
       Object.keys(approvedFields).forEach(key => {
         if (approvedFields[key]) {
-          // Map facebook_handle to facebook_url if needed
-          const mappedKey = key === 'facebook_handle' ? 'facebook_url' : key
+          // Map social media field variations to correct database columns
+          let mappedKey = key
+          if (key === 'facebook_handle' || key === 'facebook' || key === 'facebook_url') {
+            mappedKey = 'facebook_url'
+          } else if (key === 'instagram' || key === 'instagram_url') {
+            mappedKey = 'instagram_handle'
+          }
           updates[mappedKey] = enrichmentData[key]?.value
         }
       })
