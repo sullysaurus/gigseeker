@@ -29,7 +29,7 @@ export default function Home() {
             </p>
 
             <p className="text-lg text-gray-700 mb-10 max-w-xl mx-auto">
-              AI-powered venue outreach that actually gets you booked. Track every email, follow up at the perfect time.
+              Organize your venues, track your emails, and follow up at the perfect time. The booking tool built for musicians.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -120,10 +120,10 @@ export default function Home() {
             </div>
 
             <div className="card-hover animate-slide-up bg-accent-blue" style={{ animationDelay: '0.1s' }}>
-              <div className="text-4xl mb-4">🤖</div>
-              <h3 className="text-2xl font-black mb-3">AI ASSISTANT</h3>
+              <div className="text-4xl mb-4">✍️</div>
+              <h3 className="text-2xl font-black mb-3">EMAIL TEMPLATES</h3>
               <p className="text-lg">
-                Write professional, personalized emails in seconds with Claude AI. Never stare at a blank screen again.
+                Start with proven templates, then make them yours. Get past the blank page and sound like yourself, not a robot.
               </p>
             </div>
 
@@ -176,10 +176,6 @@ export default function Home() {
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span><strong>5 AI email assists</strong></span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-green-600 font-bold">✓</span>
                   <span>CRM pipeline tracking</span>
                 </div>
                 <div className="flex items-start gap-2">
@@ -192,7 +188,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span>Basic search (top 50)</span>
+                  <span>Basic venue search</span>
                 </div>
               </div>
             </div>
@@ -230,15 +226,11 @@ export default function Home() {
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span><strong>AI email writing</strong></span>
+                  <span><strong>20+ email templates</strong></span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span>AI venue discovery</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>20+ email templates</span>
+                  <span>Smart venue matching</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
