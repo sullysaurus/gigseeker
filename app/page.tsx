@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { CheckoutButton } from '@/components/checkout-button'
 import { Navigation } from '@/components/navigation'
 
 export default function Home() {
@@ -252,12 +253,13 @@ export default function Home() {
                 <p className="text-gray-900 font-bold">Actually book shows</p>
               </div>
 
-              <Link
-                href="/sign-up"
+              <CheckoutButton
+                priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
+                tierName="Pro"
                 className="block w-full border-2 border-black bg-black text-white px-6 py-3 font-bold text-center hover:bg-white hover:text-black transition-colors mb-6"
               >
                 START PRO TRIAL
-              </Link>
+              </CheckoutButton>
 
               <div className="space-y-3 text-sm">
                 <div className="flex items-start gap-2">
@@ -310,12 +312,13 @@ export default function Home() {
                 <p className="text-gray-700">For managers & agencies</p>
               </div>
 
-              <Link
-                href="/sign-up"
+              <CheckoutButton
+                priceId={process.env.NEXT_PUBLIC_STRIPE_AGENCY_PRICE_ID!}
+                tierName="Agency"
                 className="block w-full border-2 border-black bg-white text-black px-6 py-3 font-bold text-center hover:bg-gray-100 transition-colors mb-6"
               >
                 GO AGENCY
-              </Link>
+              </CheckoutButton>
 
               <div className="space-y-3 text-sm">
                 <div className="flex items-start gap-2">
