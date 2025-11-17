@@ -1,0 +1,7 @@
+# robots.txt for Gigseeker
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin
+
+Sitemap: https://gigseeker.vercel.app/sitemap.xml

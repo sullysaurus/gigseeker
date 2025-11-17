@@ -174,18 +174,18 @@ export function PipelineTable({
     <div className="space-y-4">
       {/* Filters and Search */}
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-        <div className="flex gap-2 items-center flex-wrap">
+        <div className="flex gap-3 items-center flex-wrap">
           <input
             type="text"
             placeholder="Search venues..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="border-2 border-black px-3 py-2 font-mono text-sm w-64"
+            className="border-2 border-black px-4 py-2.5 font-mono text-sm w-72 rounded focus:outline-none focus:ring-2 focus:ring-black"
           />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as Venue['status'] | 'all')}
-            className="border-2 border-black px-3 py-2 font-bold text-sm"
+            className="border-2 border-black px-4 py-2.5 font-bold text-sm rounded cursor-pointer hover:bg-gray-50 transition-colors"
           >
             <option value="all">All Statuses</option>
             {STATUS_OPTIONS.map(status => (
@@ -196,8 +196,10 @@ export function PipelineTable({
 
         {/* Bulk Actions */}
         {selectedVenues.size > 0 && (
-          <div className="flex gap-2 items-center">
-            <span className="text-sm font-bold">{selectedVenues.size} selected</span>
+          <div className="flex gap-3 items-center">
+            <span className="text-sm font-bold bg-black text-white px-3 py-1.5 rounded">
+              {selectedVenues.size} selected
+            </span>
             <select
               onChange={(e) => {
                 if (e.target.value) {
@@ -205,7 +207,7 @@ export function PipelineTable({
                   e.target.value = ''
                 }
               }}
-              className="border-2 border-black px-3 py-2 font-bold text-sm"
+              className="border-2 border-black px-4 py-2.5 font-bold text-sm rounded cursor-pointer hover:bg-gray-50 transition-colors"
             >
               <option value="">Bulk Update Status</option>
               {STATUS_OPTIONS.map(status => (
@@ -217,56 +219,56 @@ export function PipelineTable({
       </div>
 
       {/* Table */}
-      <div className="border-3 border-black bg-white overflow-x-auto">
+      <div className="border-3 border-black bg-white overflow-x-auto shadow-brutalist rounded-sm">
         <table className="w-full">
-          <thead className="border-b-3 border-black bg-gray-50">
+          <thead className="border-b-3 border-black bg-white">
             <tr>
-              <th className="p-3 text-left w-12">
+              <th className="p-4 text-left w-12">
                 <input
                   type="checkbox"
                   checked={selectedVenues.size === sortedVenues.length && sortedVenues.length > 0}
                   onChange={toggleAll}
-                  className="w-4 h-4"
+                  className="w-5 h-5 cursor-pointer"
                 />
               </th>
               <th
-                className="p-3 text-left font-black text-sm cursor-pointer hover:bg-gray-100"
+                className="p-4 text-left font-black text-xs uppercase tracking-wider cursor-pointer hover:bg-gray-50 transition-colors"
                 onClick={() => handleSort('name')}
               >
                 NAME <SortIcon field="name" />
               </th>
               <th
-                className="p-3 text-left font-black text-sm cursor-pointer hover:bg-gray-100 hidden sm:table-cell"
+                className="p-4 text-left font-black text-xs uppercase tracking-wider cursor-pointer hover:bg-gray-50 transition-colors hidden sm:table-cell"
                 onClick={() => handleSort('city')}
               >
                 CITY <SortIcon field="city" />
               </th>
-              <th className="p-3 text-left font-black text-sm hidden md:table-cell">STATE</th>
+              <th className="p-4 text-left font-black text-xs uppercase tracking-wider hidden md:table-cell">STATE</th>
               <th
-                className="p-3 text-left font-black text-sm cursor-pointer hover:bg-gray-100"
+                className="p-4 text-left font-black text-xs uppercase tracking-wider cursor-pointer hover:bg-gray-50 transition-colors"
                 onClick={() => handleSort('status')}
               >
                 STATUS <SortIcon field="status" />
               </th>
               <th
-                className="p-3 text-left font-black text-sm cursor-pointer hover:bg-gray-100 hidden lg:table-cell"
+                className="p-4 text-left font-black text-xs uppercase tracking-wider cursor-pointer hover:bg-gray-50 transition-colors hidden lg:table-cell"
                 onClick={() => handleSort('priority')}
               >
                 PRIORITY <SortIcon field="priority" />
               </th>
               <th
-                className="p-3 text-left font-black text-sm cursor-pointer hover:bg-gray-100 hidden lg:table-cell"
+                className="p-4 text-left font-black text-xs uppercase tracking-wider cursor-pointer hover:bg-gray-50 transition-colors hidden lg:table-cell"
                 onClick={() => handleSort('contact_attempts')}
               >
                 CONTACT
               </th>
               <th
-                className="p-3 text-left font-black text-sm cursor-pointer hover:bg-gray-100 hidden md:table-cell"
+                className="p-4 text-left font-black text-xs uppercase tracking-wider cursor-pointer hover:bg-gray-50 transition-colors hidden md:table-cell"
                 onClick={() => handleSort('last_contact_at')}
               >
                 LAST CONTACT
               </th>
-              <th className="p-3 text-left font-black text-sm">ACTIONS</th>
+              <th className="p-4 text-left font-black text-xs uppercase tracking-wider">ACTIONS</th>
             </tr>
           </thead>
           <tbody>
@@ -283,35 +285,39 @@ export function PipelineTable({
                 return (
                   <tr
                     key={venue.id}
-                    className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                    className="border-b-2 border-gray-200 hover:bg-gray-50 transition-all group"
                   >
-                    <td className="p-3">
+                    <td className="p-4">
                       <input
                         type="checkbox"
                         checked={selectedVenues.has(venue.id)}
                         onChange={() => toggleVenue(venue.id)}
-                        className="w-4 h-4"
+                        className="w-5 h-5 cursor-pointer"
                       />
                     </td>
-                    <td className="p-3">
-                      <div className="font-bold">{venue.name}</div>
+                    <td className="p-4">
+                      <div className="font-black text-base">{venue.name}</div>
                       {venue.genres.length > 0 && (
-                        <div className="text-xs text-gray-500 mt-1">
-                          {venue.genres.slice(0, 2).map(capitalizeGenre).join(', ')}
+                        <div className="text-xs text-gray-500 mt-1.5 flex flex-wrap gap-1">
+                          {venue.genres.slice(0, 2).map((genre, i) => (
+                            <span key={i} className="px-1.5 py-0.5 bg-gray-100 rounded">
+                              {capitalizeGenre(genre)}
+                            </span>
+                          ))}
                         </div>
                       )}
                       {/* Show city/state on mobile under name */}
-                      <div className="text-xs text-gray-500 mt-1 sm:hidden">
-                        {venue.city}, {venue.state}
+                      <div className="text-xs text-gray-600 mt-1.5 sm:hidden font-medium">
+                        📍 {venue.city}, {venue.state}
                       </div>
                     </td>
-                    <td className="p-3 text-sm hidden sm:table-cell">{venue.city}</td>
-                    <td className="p-3 text-sm hidden md:table-cell">{venue.state}</td>
-                    <td className="p-3">
+                    <td className="p-4 text-sm font-medium hidden sm:table-cell">{venue.city}</td>
+                    <td className="p-4 text-sm font-medium hidden md:table-cell">{venue.state}</td>
+                    <td className="p-4">
                       <select
                         value={venue.status}
                         onChange={(e) => onStatusChange(venue.id, e.target.value as Venue['status'])}
-                        className={`border-2 border-black px-2 py-1 text-xs font-bold ${getStatusColor(venue.status)} cursor-pointer w-full sm:w-auto`}
+                        className={`border-2 border-black px-3 py-2 text-xs font-bold ${getStatusColor(venue.status)} cursor-pointer w-full sm:w-auto rounded hover:shadow-sm transition-shadow`}
                       >
                         {STATUS_OPTIONS.map(status => (
                           <option key={status.value} value={status.value}>
@@ -320,60 +326,60 @@ export function PipelineTable({
                         ))}
                       </select>
                     </td>
-                    <td className="p-3 hidden lg:table-cell">
+                    <td className="p-4 hidden lg:table-cell">
                       <button
                         onClick={() => {
                           const nextPriority = venue.priority === 3 ? 1 : venue.priority + 1
                           onPriorityChange(venue.id, nextPriority)
                         }}
-                        className={`px-2 py-1 text-xs font-bold border-2 border-black ${priorityOption.color} ${priorityOption.textColor}`}
+                        className={`px-3 py-1.5 text-xs font-bold border-2 border-black rounded ${priorityOption.color} ${priorityOption.textColor} hover:scale-105 transition-transform`}
                       >
                         {priorityOption.label}
                       </button>
                     </td>
-                    <td className="p-3 text-sm hidden lg:table-cell">
+                    <td className="p-4 text-sm hidden lg:table-cell">
                       {venue.contact_attempts > 0 ? (
-                        <span className="font-mono">{venue.contact_attempts}x</span>
+                        <span className="font-mono font-bold text-gray-700">{venue.contact_attempts}x</span>
                       ) : (
                         <span className="text-gray-400">-</span>
                       )}
                     </td>
-                    <td className="p-3 text-sm text-gray-600 hidden md:table-cell">
+                    <td className="p-4 text-sm text-gray-600 hidden md:table-cell font-medium">
                       {formatDate(venue.last_contact_at)}
                     </td>
-                    <td className="p-3">
-                      <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                    <td className="p-4">
+                      <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-2">
                         <button
                           onClick={() => onSendEmail(venue)}
-                          className="px-2 py-1.5 text-xs border-2 border-black hover:bg-black hover:text-white transition-colors text-left"
+                          className="px-3 py-2 text-xs font-bold border-2 border-black hover:bg-black hover:text-white transition-all rounded text-left"
                           title="Send Email"
                         >
                           <span className="inline sm:hidden">✉️ Email</span>
-                          <span className="hidden sm:inline">✉️</span>
+                          <span className="hidden sm:inline text-base">✉️</span>
                         </button>
                         <button
                           onClick={() => onEditNotes(venue)}
-                          className="px-2 py-1.5 text-xs border-2 border-black hover:bg-black hover:text-white transition-colors text-left"
+                          className="px-3 py-2 text-xs font-bold border-2 border-black hover:bg-black hover:text-white transition-all rounded text-left"
                           title="Edit Notes"
                         >
                           <span className="inline sm:hidden">📝 Notes</span>
-                          <span className="hidden sm:inline">📝</span>
+                          <span className="hidden sm:inline text-base">📝</span>
                         </button>
                         <button
                           onClick={() => onArchive(venue.id)}
-                          className="px-2 py-1.5 text-xs border-2 border-black hover:bg-yellow-100 transition-colors text-left"
+                          className="px-3 py-2 text-xs font-bold border-2 border-black hover:bg-yellow-100 transition-all rounded text-left"
                           title="Archive"
                         >
                           <span className="inline sm:hidden">📦 Archive</span>
-                          <span className="hidden sm:inline">📦</span>
+                          <span className="hidden sm:inline text-base">📦</span>
                         </button>
                         <button
                           onClick={() => onDelete(venue.id)}
-                          className="px-2 py-1.5 text-xs border-2 border-black hover:bg-red-100 transition-colors text-left"
+                          className="px-3 py-2 text-xs font-bold border-2 border-black hover:bg-red-100 transition-all rounded text-left"
                           title="Delete"
                         >
                           <span className="inline sm:hidden">🗑️ Delete</span>
-                          <span className="hidden sm:inline">🗑️</span>
+                          <span className="hidden sm:inline text-base">🗑️</span>
                         </button>
                       </div>
                     </td>

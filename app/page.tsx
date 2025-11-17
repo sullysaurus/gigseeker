@@ -2,8 +2,48 @@ import Link from 'next/link'
 import { Navigation } from '@/components/navigation'
 
 export default function Home() {
+  // JSON-LD structured data for SEO
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Gigseeker',
+    applicationCategory: 'BusinessApplication',
+    offers: [
+      {
+        '@type': 'Offer',
+        name: 'Free',
+        price: '0',
+        priceCurrency: 'USD',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Pro',
+        price: '29',
+        priceCurrency: 'USD',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Agency',
+        price: '129',
+        priceCurrency: 'USD',
+      },
+    ],
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '5',
+      ratingCount: '1',
+    },
+    description: 'Pre-verified venues with booking contacts. Track link clicks, use AI writing assists, and book more shows.',
+    operatingSystem: 'Web',
+    url: 'https://gigseeker.vercel.app',
+  }
+
   return (
     <div className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navigation />
 
       {/* Hero Section */}
@@ -28,8 +68,8 @@ export default function Home() {
               Stop wasting time on email.<br />Start booking shows.
             </p>
 
-            <p className="text-lg text-gray-700 mb-10 max-w-xl mx-auto">
-              Organize your venues, track your emails, and follow up at the perfect time. The booking tool built for musicians.
+            <p className="text-lg text-gray-700 mb-10 max-w-2xl mx-auto">
+              Pre-verified venues with booking contacts. No more googling. No more hunting for emails. Just organized outreach that actually books shows.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -111,27 +151,27 @@ export default function Home() {
           </h2>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            <div className="card-hover animate-slide-up bg-accent-yellow">
-              <div className="text-4xl mb-4">📧</div>
-              <h3 className="text-xl md:text-2xl font-black mb-3">EMAIL TRACKING</h3>
+            <div className="card-hover animate-slide-up bg-accent-green">
+              <div className="text-4xl mb-4">✓</div>
+              <h3 className="text-xl md:text-2xl font-black mb-3">VERIFIED VENUE DATA</h3>
               <p className="text-base md:text-lg">
-                Know exactly when venues open your emails. Perfect your timing and follow up at the right moment.
+                No more googling for booking contacts. Every venue includes verified email addresses, genres, and capacity. Pre-researched and ready to contact.
               </p>
             </div>
 
             <div className="card-hover animate-slide-up bg-accent-blue" style={{ animationDelay: '0.1s' }}>
-              <div className="text-4xl mb-4">✍️</div>
-              <h3 className="text-xl md:text-2xl font-black mb-3">EMAIL TEMPLATES</h3>
+              <div className="text-4xl mb-4">🤖</div>
+              <h3 className="text-xl md:text-2xl font-black mb-3">AI WRITING ASSISTS</h3>
               <p className="text-base md:text-lg">
-                Start with proven templates, then make them yours. Get past the blank page and sound like yourself, not a robot.
+                Get past writer's block with AI-powered email improvements, subject lines, and followups. You stay in control—AI just helps you write faster.
               </p>
             </div>
 
-            <div className="card-hover animate-slide-up bg-accent-pink sm:col-span-2 lg:col-span-1" style={{ animationDelay: '0.2s' }}>
+            <div className="card-hover animate-slide-up bg-accent-yellow sm:col-span-2 lg:col-span-1" style={{ animationDelay: '0.2s' }}>
               <div className="text-4xl mb-4">📊</div>
-              <h3 className="text-xl md:text-2xl font-black mb-3">CRM PIPELINE</h3>
+              <h3 className="text-xl md:text-2xl font-black mb-3">SMART TRACKING</h3>
               <p className="text-base md:text-lg">
-                Track every venue from discovery to booking. Manage hundreds of venues with our spreadsheet-style pipeline.
+                Track every venue from discovery to booking. See link clicks, manage followups, and never lose track of a potential gig.
               </p>
             </div>
           </div>
@@ -172,7 +212,11 @@ export default function Home() {
               <div className="space-y-3 text-sm">
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span><strong>Search venues</strong></span>
+                  <span><strong>Verified venue database</strong></span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span><strong>Booking contact emails</strong></span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
@@ -185,10 +229,6 @@ export default function Home() {
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
                   <span>Track notes & status</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>Plan your outreach</span>
                 </div>
                 <div className="flex items-start gap-2 opacity-40">
                   <span className="font-bold">✗</span>
@@ -230,7 +270,11 @@ export default function Home() {
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span><strong>Track email opens</strong></span>
+                  <span><strong>Track link clicks</strong></span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span><strong>AI writing assists</strong></span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
@@ -238,7 +282,11 @@ export default function Home() {
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
-                  <span>20+ email templates</span>
+                  <span>Email improvement suggestions</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span>Subject line generator</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">✓</span>
@@ -248,14 +296,6 @@ export default function Home() {
                   <span className="text-green-600 font-bold">✓</span>
                   <span>Email analytics</span>
                 </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>Saved searches</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>Export data</span>
-                </div>
               </div>
             </div>
 
@@ -264,7 +304,7 @@ export default function Home() {
               <div className="mb-6">
                 <h3 className="text-2xl font-black mb-2">AGENCY</h3>
                 <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-5xl font-black">$59</span>
+                  <span className="text-5xl font-black">$129</span>
                   <span className="text-gray-600">/month</span>
                 </div>
                 <p className="text-gray-700">For managers & agencies</p>
@@ -317,7 +357,9 @@ export default function Home() {
           {/* FAQ or note */}
           <div className="mt-12 text-center">
             <p className="text-sm text-gray-600">
-              All plans include email tracking, CRM pipeline, and venue database access.
+              All plans include verified venue database and CRM pipeline access.
+              <br />
+              Pro and Agency include email sending, link tracking, and AI features.
               <br />
               No credit card required. Cancel anytime.
             </p>
@@ -334,10 +376,10 @@ export default function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {[
-              { step: '1', title: 'SEARCH VENUES', desc: 'Find venues that match your genre and location' },
+              { step: '1', title: 'SEARCH VENUES', desc: 'Pre-verified venues with booking contacts ready to go' },
               { step: '2', title: 'ADD TO PIPELINE', desc: 'Organize venues by status and priority' },
               { step: '3', title: 'SEND EMAILS', desc: 'Craft personalized emails with templates' },
-              { step: '4', title: 'TRACK & BOOK', desc: 'See opens, track responses, confirm gigs' },
+              { step: '4', title: 'TRACK & BOOK', desc: 'See link clicks, track responses, confirm gigs' },
             ].map((item) => (
               <div key={item.step} className="text-center">
                 <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 border-brutalist bg-black text-white text-xl md:text-2xl font-black mb-3 md:mb-4 shadow-brutalist">

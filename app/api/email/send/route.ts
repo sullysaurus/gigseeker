@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     }
 
     // Send email via Resend
-    const fromEmail = process.env.FROM_EMAIL || 'bookings@gigseeker.app'
+    const fromEmail = process.env.FROM_EMAIL || 'bookings@gigseeker.pro'
     const replyToEmail = profile.booking_email || user.email
 
     const { data: emailData, error: emailError } = await resend.emails.send({

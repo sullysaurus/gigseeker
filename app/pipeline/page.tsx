@@ -400,76 +400,50 @@ export default function PipelinePage() {
 
       <main className="px-4 py-6 md:p-8">
         <div className="max-w-[1800px] mx-auto">
-          <div className="mb-6 md:mb-8 flex flex-col md:flex-row md:justify-between md:items-start lg:items-center gap-4">
-            <div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-2">MY PIPELINE</h1>
-              <p className="text-sm md:text-base text-gray-600">
-                Track your venue outreach from discovery to booking
-              </p>
+          <div className="mb-6 md:mb-8 flex flex-col gap-6">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+              <div>
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-2">MY PIPELINE</h1>
+                <p className="text-sm md:text-base text-gray-600">
+                  Track your venue outreach from discovery to booking
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                <Link
+                  href="/history"
+                  className="btn-secondary shadow-brutalist inline-block text-center text-sm sm:text-base py-2 sm:py-3"
+                >
+                  📦 HISTORY
+                </Link>
+                <button
+                  onClick={() => setShowSearch(true)}
+                  className="btn-secondary shadow-brutalist text-sm sm:text-base py-2 sm:py-3"
+                >
+                  + QUICK ADD
+                </button>
+              </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              <Link
-                href="/history"
-                className="btn-secondary shadow-brutalist inline-block text-center text-sm sm:text-base py-2 sm:py-3"
-              >
-                📦 HISTORY
-              </Link>
+            {/* Prominent Browse Button */}
+            {venues.length === 0 && (
               <Link
                 href="/venues"
-                className="btn-secondary shadow-brutalist inline-block text-center text-sm sm:text-base py-2 sm:py-3"
+                className="btn-primary shadow-brutalist-lg text-center text-base sm:text-lg py-4 sm:py-5 hover:scale-105 transition-transform"
               >
                 🔍 BROWSE VENUES
               </Link>
-              <button
-                onClick={() => setShowSearch(true)}
-                className="btn-primary shadow-brutalist text-sm sm:text-base py-2 sm:py-3"
-              >
-                + QUICK ADD
-              </button>
-            </div>
-          </div>
-
-          {/* Stats Cards */}
-          <div className="mb-6 md:mb-8 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-            <div className="card bg-white p-4 md:p-6">
-              <div className="text-3xl md:text-4xl font-black mb-1">{venues.length}</div>
-              <div className="text-xs md:text-sm font-bold text-gray-600">Total Venues</div>
-            </div>
-            <div className="card bg-accent-yellow p-4 md:p-6">
-              <div className="text-3xl md:text-4xl font-black mb-1">
-                {venues.filter(v => v.status === 'contacted').length}
-              </div>
-              <div className="text-xs md:text-sm font-bold">Emails Sent</div>
-            </div>
-            <div className="card bg-accent-blue p-4 md:p-6">
-              <div className="text-3xl md:text-4xl font-black mb-1">
-                {venues.filter(v => v.status === 'opened').length}
-              </div>
-              <div className="text-xs md:text-sm font-bold">Emails Opened</div>
-            </div>
-            <div className="card bg-accent-green p-4 md:p-6">
-              <div className="text-3xl md:text-4xl font-black mb-1">
-                {venues.filter(v => v.status === 'booked').length}
-              </div>
-              <div className="text-xs md:text-sm font-bold">Gigs Booked</div>
-            </div>
+            )}
           </div>
 
           {/* Empty State */}
           {venues.length === 0 && (
             <div className="border-brutalist shadow-brutalist-lg bg-white p-12 text-center animate-slide-up">
-              <div className="text-6xl mb-4">🎸</div>
+              <div className="text-6xl mb-6">🎸</div>
               <h2 className="text-3xl font-black mb-4">YOUR PIPELINE IS EMPTY</h2>
               <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
-                Start by adding venues you'd like to reach out to. Search our database or add your own.
+                Start building your venue list. Browse our database to find venues that match your style.
               </p>
-              <button
-                onClick={() => setShowSearch(true)}
-                className="btn-primary shadow-brutalist"
-              >
-                FIND VENUES
-              </button>
             </div>
           )}
 

@@ -1,0 +1,16 @@
+{
+  "name": "Gigseeker",
+  "short_name": "Gigseeker",
+  "description": "Book more gigs with verified venue data",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
