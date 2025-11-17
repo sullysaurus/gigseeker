@@ -94,6 +94,34 @@ export default function VenuesPage() {
     loadUserData()
   }, [])
 
+  // Load first 10 venues by default on mount
+  useEffect(() => {
+    const loadDefaultVenues = async () => {
+      try {
+        const response = await fetch('/api/venues/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            state: 'NC',
+            limit: 10,
+            offset: 0,
+          }),
+        })
+
+        const data = await response.json()
+
+        if (response.ok && data.venues) {
+          setVenues(data.venues)
+          setTotal(data.total || 0)
+        }
+      } catch (error) {
+        console.error('Failed to load default venues:', error)
+      }
+    }
+
+    loadDefaultVenues()
+  }, [])
+
   const toggleGenre = (genre: string) => {
     setSelectedGenres(prev =>
       prev.includes(genre)
