@@ -57,6 +57,85 @@ const capitalizeGenre = (genre: string) => {
     .join(' ')
 }
 
+// Mobile Actions Menu Component
+interface VenueActionsMenuProps {
+  venue: Venue
+  onSendEmail: (venue: Venue) => void
+  onEditNotes: (venue: Venue) => void
+  onArchive: (venueId: string) => void
+  onDelete: (venueId: string) => void
+}
+
+function VenueActionsMenu({ venue, onSendEmail, onEditNotes, onArchive, onDelete }: VenueActionsMenuProps) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full border-2 border-black bg-white px-4 py-2 font-bold text-sm hover:bg-gray-50 transition-colors rounded flex items-center justify-between"
+      >
+        <span>Actions</span>
+        <span className="text-xs">{isOpen ? '▼' : '▶'}</span>
+      </button>
+
+      {isOpen && (
+        <>
+          {/* Backdrop to close menu */}
+          <div
+            className="fixed inset-0 z-10"
+            onClick={() => setIsOpen(false)}
+          />
+
+          {/* Dropdown menu */}
+          <div className="absolute right-0 mt-1 w-48 bg-white border-2 border-black shadow-lg z-20 rounded overflow-hidden">
+            <button
+              onClick={() => {
+                onSendEmail(venue)
+                setIsOpen(false)
+              }}
+              className="w-full px-4 py-3 text-left font-bold text-sm hover:bg-gray-100 transition-colors border-b border-gray-200 flex items-center gap-2"
+            >
+              <span>✉️</span>
+              <span>Email</span>
+            </button>
+            <button
+              onClick={() => {
+                onEditNotes(venue)
+                setIsOpen(false)
+              }}
+              className="w-full px-4 py-3 text-left font-bold text-sm hover:bg-gray-100 transition-colors border-b border-gray-200 flex items-center gap-2"
+            >
+              <span>📝</span>
+              <span>Notes</span>
+            </button>
+            <button
+              onClick={() => {
+                onArchive(venue.id)
+                setIsOpen(false)
+              }}
+              className="w-full px-4 py-3 text-left font-bold text-sm hover:bg-yellow-50 transition-colors border-b border-gray-200 flex items-center gap-2"
+            >
+              <span>📦</span>
+              <span>Archive</span>
+            </button>
+            <button
+              onClick={() => {
+                onDelete(venue.id)
+                setIsOpen(false)
+              }}
+              className="w-full px-4 py-3 text-left font-bold text-sm hover:bg-red-50 transition-colors flex items-center gap-2"
+            >
+              <span>🗑️</span>
+              <span>Delete</span>
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 export function PipelineTable({
   venues,
   onStatusChange,
@@ -348,38 +427,46 @@ export function PipelineTable({
                       {formatDate(venue.last_contact_at)}
                     </td>
                     <td className="p-4">
-                      <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-2">
+                      {/* Mobile: Compact dropdown menu */}
+                      <div className="sm:hidden">
+                        <VenueActionsMenu
+                          venue={venue}
+                          onSendEmail={onSendEmail}
+                          onEditNotes={onEditNotes}
+                          onArchive={onArchive}
+                          onDelete={onDelete}
+                        />
+                      </div>
+
+                      {/* Desktop: Icon buttons */}
+                      <div className="hidden sm:flex gap-2">
                         <button
                           onClick={() => onSendEmail(venue)}
-                          className="px-3 py-2 text-xs font-bold border-2 border-black hover:bg-black hover:text-white transition-all rounded text-left"
+                          className="p-2 text-base border-2 border-black hover:bg-black hover:text-white transition-all rounded"
                           title="Send Email"
                         >
-                          <span className="inline sm:hidden">✉️ Email</span>
-                          <span className="hidden sm:inline text-base">✉️</span>
+                          ✉️
                         </button>
                         <button
                           onClick={() => onEditNotes(venue)}
-                          className="px-3 py-2 text-xs font-bold border-2 border-black hover:bg-black hover:text-white transition-all rounded text-left"
+                          className="p-2 text-base border-2 border-black hover:bg-black hover:text-white transition-all rounded"
                           title="Edit Notes"
                         >
-                          <span className="inline sm:hidden">📝 Notes</span>
-                          <span className="hidden sm:inline text-base">📝</span>
+                          📝
                         </button>
                         <button
                           onClick={() => onArchive(venue.id)}
-                          className="px-3 py-2 text-xs font-bold border-2 border-black hover:bg-yellow-100 transition-all rounded text-left"
+                          className="p-2 text-base border-2 border-black hover:bg-yellow-100 transition-all rounded"
                           title="Archive"
                         >
-                          <span className="inline sm:hidden">📦 Archive</span>
-                          <span className="hidden sm:inline text-base">📦</span>
+                          📦
                         </button>
                         <button
                           onClick={() => onDelete(venue.id)}
-                          className="px-3 py-2 text-xs font-bold border-2 border-black hover:bg-red-100 transition-all rounded text-left"
+                          className="p-2 text-base border-2 border-black hover:bg-red-100 transition-all rounded"
                           title="Delete"
                         >
-                          <span className="inline sm:hidden">🗑️ Delete</span>
-                          <span className="hidden sm:inline text-base">🗑️</span>
+                          🗑️
                         </button>
                       </div>
                     </td>
