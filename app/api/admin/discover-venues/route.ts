@@ -107,9 +107,9 @@ Example:
 
 Return valid JSON only, no markdown formatting.`
 
-    // Call Claude with web search (using Haiku for cost efficiency)
+    // Call Claude with web search (using Sonnet for better accuracy on complex discovery)
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-haiku-20241022',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: 8192,
       messages: [{
         role: 'user',
