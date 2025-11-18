@@ -68,6 +68,9 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
   const [showBulkEnrichModal, setShowBulkEnrichModal] = useState(false)
   const [bulkEnrichmentProgress, setBulkEnrichmentProgress] = useState<{ total: number; completed: number; results: any[] } | null>(null)
 
+  // Pending venues selection state
+  const [selectedPendingVenues, setSelectedPendingVenues] = useState<{ [id: string]: boolean }>({})
+
   // Discovery state
   const [showDiscoverVenues, setShowDiscoverVenues] = useState(false)
   const [discoveryCity, setDiscoveryCity] = useState('')
@@ -393,7 +396,7 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
   const rejectVenue = async (venueId: string) => {
     if (!confirm('Are you sure you want to reject and delete this venue?')) return
 
-    const { error } = await supabase
+    const { error} = await supabase
       .from('venues')
       .delete()
       .eq('id', venueId)
@@ -403,6 +406,74 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
     } else {
       toast.success('Venue rejected and deleted')
       loadPendingVenues()
+    }
+  }
+
+  // Batch approve pending venues
+  const batchApprovePendingVenues = async () => {
+    const selectedIds = Object.keys(selectedPendingVenues).filter(id => selectedPendingVenues[id])
+    if (selectedIds.length === 0) {
+      toast.error('No venues selected')
+      return
+    }
+
+    if (!confirm(`Approve ${selectedIds.length} venue(s)?`)) return
+
+    const { error } = await supabase
+      .from('venues')
+      .update({ is_verified: true })
+      .in('id', selectedIds)
+
+    if (error) {
+      toast.error('Error approving venues: ' + error.message)
+    } else {
+      toast.success(`${selectedIds.length} venue(s) approved!`)
+      setSelectedPendingVenues({})
+      loadPendingVenues()
+    }
+  }
+
+  // Batch reject pending venues
+  const batchRejectPendingVenues = async () => {
+    const selectedIds = Object.keys(selectedPendingVenues).filter(id => selectedPendingVenues[id])
+    if (selectedIds.length === 0) {
+      toast.error('No venues selected')
+      return
+    }
+
+    if (!confirm(`Reject and delete ${selectedIds.length} venue(s)? This cannot be undone.`)) return
+
+    const { error } = await supabase
+      .from('venues')
+      .delete()
+      .in('id', selectedIds)
+
+    if (error) {
+      toast.error('Error rejecting venues: ' + error.message)
+    } else {
+      toast.success(`${selectedIds.length} venue(s) rejected and deleted`)
+      setSelectedPendingVenues({})
+      loadPendingVenues()
+    }
+  }
+
+  // Toggle pending venue selection
+  const togglePendingVenueSelection = (venueId: string) => {
+    setSelectedPendingVenues(prev => ({
+      ...prev,
+      [venueId]: !prev[venueId]
+    }))
+  }
+
+  // Select all pending venues
+  const toggleAllPendingVenues = () => {
+    const allSelected = pendingVenues.every(v => selectedPendingVenues[v.id])
+    if (allSelected) {
+      setSelectedPendingVenues({})
+    } else {
+      const newSelection: { [id: string]: boolean } = {}
+      pendingVenues.forEach(v => { newSelection[v.id] = true })
+      setSelectedPendingVenues(newSelection)
     }
   }
 
@@ -464,13 +535,18 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
       }
 
       // Reload venues to show updated data
-      await loadVenues()
+      if (activeTab === 'venues') {
+        await loadVenues()
+      } else if (activeTab === 'pending') {
+        await loadPendingVenues()
+      }
 
       const successCount = results.filter(r => r.success).length
       toast.success(`Enriched ${successCount}/${venueIds.length} venues successfully!`)
 
       setShowBulkEnrichModal(false)
       setSelectedVenues({})
+      setSelectedPendingVenues({})
       setBulkEnrichmentProgress(null)
     } catch (error) {
       toast.error('Bulk enrichment failed')
@@ -848,20 +924,83 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
               </div>
             ) : (
               <>
+                {/* Batch Actions Header */}
+                <div className="mb-4 flex flex-wrap items-center gap-3 p-3 bg-gray-100 border-2 border-black">
+                  <label className="flex items-center gap-2 font-bold">
+                    <input
+                      type="checkbox"
+                      checked={pendingVenues.length > 0 && pendingVenues.every(v => selectedPendingVenues[v.id])}
+                      onChange={toggleAllPendingVenues}
+                      className="w-5 h-5"
+                    />
+                    SELECT ALL
+                  </label>
+
+                  <div className="flex-1"></div>
+
+                  {Object.values(selectedPendingVenues).some(v => v) && (
+                    <>
+                      <span className="font-bold text-sm">
+                        {Object.keys(selectedPendingVenues).filter(id => selectedPendingVenues[id]).length} SELECTED
+                      </span>
+                      <button
+                        onClick={batchApprovePendingVenues}
+                        className="border-2 border-black bg-green-500 text-white px-4 py-2 font-bold hover:bg-green-600 transition-colors text-sm"
+                      >
+                        ✓ APPROVE SELECTED
+                      </button>
+                      <button
+                        onClick={batchRejectPendingVenues}
+                        className="border-2 border-black bg-red-500 text-white px-4 py-2 font-bold hover:bg-red-600 transition-colors text-sm"
+                      >
+                        ✗ REJECT SELECTED
+                      </button>
+                      <button
+                        onClick={() => {
+                          // Transfer pending selection to main selection for enrichment
+                          setSelectedVenues(selectedPendingVenues)
+                          setShowBulkEnrichModal(true)
+                        }}
+                        className="border-2 border-black bg-accent-purple text-white px-4 py-2 font-bold hover:bg-accent-blue transition-colors text-sm"
+                      >
+                        🤖 ENRICH SELECTED
+                      </button>
+                    </>
+                  )}
+                </div>
+
                 <div className="mb-2 text-sm text-gray-600">
                   {pendingVenues.length} venue{pendingVenues.length !== 1 ? 's' : ''} awaiting approval
                 </div>
                 <div className="space-y-4">
                   {pendingVenues.map((v) => (
                     <div key={v.id} className="border-2 border-black p-4 bg-gray-50">
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
+                      <div className="flex items-start gap-3 mb-3">
+                        {/* Checkbox */}
+                        <input
+                          type="checkbox"
+                          checked={selectedPendingVenues[v.id] || false}
+                          onChange={() => togglePendingVenueSelection(v.id)}
+                          className="mt-1 w-5 h-5"
+                        />
+
+                        {/* Venue Info */}
+                        <div className="flex-1">
                           <h3 className="text-xl font-black">{v.name}</h3>
                           <p className="text-sm text-gray-600">
                             {v.city}, {v.state} {v.zip_code && `• ${v.zip_code}`}
                           </p>
                         </div>
-                        <div className="flex gap-2">
+
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => handleEnrichVenue(v.id)}
+                            disabled={enrichingVenueId === v.id}
+                            className="border-2 border-black bg-accent-purple text-white px-3 py-2 font-bold hover:bg-accent-blue transition-colors text-sm disabled:opacity-50"
+                          >
+                            {enrichingVenueId === v.id ? '⏳' : '🤖'} ENRICH
+                          </button>
                           <button
                             onClick={() => approveVenue(v.id)}
                             className="border-2 border-black bg-green-500 text-white px-4 py-2 font-bold hover:bg-green-600 transition-colors"
