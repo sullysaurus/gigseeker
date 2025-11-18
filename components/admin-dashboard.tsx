@@ -24,9 +24,16 @@ interface Venue {
   email: string
   phone: string
   website: string
+  address?: string
+  zip_code?: string
+  country?: string
+  description?: string
   venue_type: string  // Single value: 'bar', 'club', 'theater', etc.
   music_focus: string[]  // Array of genres
   capacity: number
+  instagram_handle?: string
+  facebook_url?: string
+  is_verified: boolean
   created_at: string
 }
 
@@ -39,9 +46,10 @@ type VenueSortField = 'name' | 'city' | 'state' | 'capacity' | 'created_at'
 type SortDirection = 'asc' | 'desc'
 
 export function AdminDashboard({ user, profile }: AdminDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'users' | 'venues'>('users')
+  const [activeTab, setActiveTab] = useState<'users' | 'venues' | 'pending'>('users')
   const [users, setUsers] = useState<User[]>([])
   const [venues, setVenues] = useState<Venue[]>([])
+  const [pendingVenues, setPendingVenues] = useState<Venue[]>([])
   const [loading, setLoading] = useState(true)
   const [editingUser, setEditingUser] = useState<User | null>(null)
   const [editingVenue, setEditingVenue] = useState<Venue | null>(null)
@@ -81,15 +89,30 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
     setLoading(false)
   }
 
-  // Load venues
+  // Load venues (verified only)
   const loadVenues = async () => {
     setLoading(true)
     const { data, error } = await supabase
       .from('venues')
       .select('*')
+      .eq('is_verified', true)
       .order('created_at', { ascending: false })
     if (data) {
       setVenues(data)
+    }
+    setLoading(false)
+  }
+
+  // Load pending venues (unverified)
+  const loadPendingVenues = async () => {
+    setLoading(true)
+    const { data, error } = await supabase
+      .from('venues')
+      .select('*')
+      .eq('is_verified', false)
+      .order('created_at', { ascending: false })
+    if (data) {
+      setPendingVenues(data)
     }
     setLoading(false)
   }
@@ -127,8 +150,10 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
   useEffect(() => {
     if (activeTab === 'users') {
       loadUsers()
-    } else {
+    } else if (activeTab === 'venues') {
       loadVenues()
+    } else if (activeTab === 'pending') {
+      loadPendingVenues()
     }
   }, [activeTab])
 
@@ -312,7 +337,7 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
     }
   }
 
-  // Bulk add discovered venues
+  // Bulk add discovered venues (as pending/unverified)
   const handleAddDiscoveredVenues = async (venuesToAdd: any[]) => {
     if (venuesToAdd.length === 0) {
       toast.error('No venues selected')
@@ -320,12 +345,12 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
     }
 
     try {
-      // Remove confidence field (not in database) and add is_verified flag
+      // Remove confidence field (not in database) and set as unverified
       const venuesWithVerified = venuesToAdd.map(v => {
         const { confidence, ...venueData } = v
         return {
           ...venueData,
-          is_verified: true,
+          is_verified: false, // Add as pending approval
         }
       })
 
@@ -336,13 +361,48 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
       if (error) {
         toast.error('Error adding venues: ' + error.message)
       } else {
-        toast.success(`Successfully added ${venuesToAdd.length} venues!`)
+        toast.success(`Added ${venuesToAdd.length} venues to pending approval!`)
         setDiscoveredVenues([])
         setShowDiscoverVenues(false)
-        loadVenues()
+        // Reload pending venues if on that tab
+        if (activeTab === 'pending') {
+          loadPendingVenues()
+        }
       }
     } catch (error) {
       toast.error('Failed to add venues')
+    }
+  }
+
+  // Approve venue
+  const approveVenue = async (venueId: string) => {
+    const { error } = await supabase
+      .from('venues')
+      .update({ is_verified: true })
+      .eq('id', venueId)
+
+    if (error) {
+      toast.error('Error approving venue: ' + error.message)
+    } else {
+      toast.success('Venue approved!')
+      loadPendingVenues()
+    }
+  }
+
+  // Reject venue (delete it)
+  const rejectVenue = async (venueId: string) => {
+    if (!confirm('Are you sure you want to reject and delete this venue?')) return
+
+    const { error } = await supabase
+      .from('venues')
+      .delete()
+      .eq('id', venueId)
+
+    if (error) {
+      toast.error('Error rejecting venue: ' + error.message)
+    } else {
+      toast.success('Venue rejected and deleted')
+      loadPendingVenues()
     }
   }
 
@@ -456,6 +516,16 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
             }`}
           >
             VENUES
+          </button>
+          <button
+            onClick={() => setActiveTab('pending')}
+            className={`font-bold px-6 py-3 border-2 border-black transition-all ${
+              activeTab === 'pending'
+                ? 'bg-black text-white'
+                : 'bg-white hover:bg-black hover:text-white'
+            }`}
+          >
+            PENDING APPROVAL {pendingVenues.length > 0 && `(${pendingVenues.length})`}
           </button>
         </div>
 
@@ -753,6 +823,128 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
                   setEditingVenue(null)
                 }}
               />
+            )}
+          </div>
+        )}
+
+        {/* Pending Approval Tab */}
+        {activeTab === 'pending' && (
+          <div className="border-3 border-black bg-white p-6 shadow-brutalist">
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h2 className="text-2xl font-black">PENDING VENUE APPROVAL</h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  Review and approve venues discovered via AI search
+                </p>
+              </div>
+            </div>
+
+            {loading ? (
+              <p>Loading pending venues...</p>
+            ) : pendingVenues.length === 0 ? (
+              <div className="text-center py-12 border-2 border-dashed border-gray-300">
+                <p className="text-gray-500 mb-2">No pending venues to review</p>
+                <p className="text-sm text-gray-400">Discover new venues to populate this list</p>
+              </div>
+            ) : (
+              <>
+                <div className="mb-2 text-sm text-gray-600">
+                  {pendingVenues.length} venue{pendingVenues.length !== 1 ? 's' : ''} awaiting approval
+                </div>
+                <div className="space-y-4">
+                  {pendingVenues.map((v) => (
+                    <div key={v.id} className="border-2 border-black p-4 bg-gray-50">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h3 className="text-xl font-black">{v.name}</h3>
+                          <p className="text-sm text-gray-600">
+                            {v.city}, {v.state} {v.zip_code && `• ${v.zip_code}`}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => approveVenue(v.id)}
+                            className="border-2 border-black bg-green-500 text-white px-4 py-2 font-bold hover:bg-green-600 transition-colors"
+                          >
+                            ✓ APPROVE
+                          </button>
+                          <button
+                            onClick={() => rejectVenue(v.id)}
+                            className="border-2 border-black bg-red-500 text-white px-4 py-2 font-bold hover:bg-red-600 transition-colors"
+                          >
+                            ✗ REJECT
+                          </button>
+                        </div>
+                      </div>
+
+                      {v.description && (
+                        <p className="text-sm mb-3">{v.description}</p>
+                      )}
+
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <span className="font-bold">Email:</span> {v.email || '-'}
+                        </div>
+                        <div>
+                          <span className="font-bold">Phone:</span> {v.phone || '-'}
+                        </div>
+                        <div>
+                          <span className="font-bold">Website:</span>{' '}
+                          {v.website ? (
+                            <a href={v.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                              {v.website.replace(/^https?:\/\//i, '')}
+                            </a>
+                          ) : '-'}
+                        </div>
+                        <div>
+                          <span className="font-bold">Capacity:</span> {v.capacity || '-'}
+                        </div>
+                        <div>
+                          <span className="font-bold">Type:</span> {v.venue_type || '-'}
+                        </div>
+                        <div>
+                          <span className="font-bold">Address:</span> {v.address || '-'}
+                        </div>
+                      </div>
+
+                      {v.music_focus && v.music_focus.length > 0 && (
+                        <div className="mt-3">
+                          <span className="font-bold text-sm">Genres: </span>
+                          <div className="flex flex-wrap gap-1 inline-flex">
+                            {v.music_focus.map((g, i) => (
+                              <span key={i} className="text-xs px-2 py-1 bg-gray-200 border border-gray-400">
+                                {g}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {(v.instagram_handle || v.facebook_url) && (
+                        <div className="mt-3 flex gap-3 text-sm">
+                          {v.instagram_handle && (
+                            <div>
+                              <span className="font-bold">Instagram:</span> {v.instagram_handle}
+                            </div>
+                          )}
+                          {v.facebook_url && (
+                            <div>
+                              <span className="font-bold">Facebook:</span>{' '}
+                              <a href={v.facebook_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                Link
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="mt-3 text-xs text-gray-500">
+                        Added: {new Date(v.created_at).toLocaleString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
         )}
