@@ -320,11 +320,14 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
     }
 
     try {
-      // Add is_verified flag
-      const venuesWithVerified = venuesToAdd.map(v => ({
-        ...v,
-        is_verified: true,
-      }))
+      // Remove confidence field (not in database) and add is_verified flag
+      const venuesWithVerified = venuesToAdd.map(v => {
+        const { confidence, ...venueData } = v
+        return {
+          ...venueData,
+          is_verified: true,
+        }
+      })
 
       const { error } = await supabase
         .from('venues')
