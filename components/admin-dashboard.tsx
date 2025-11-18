@@ -1354,7 +1354,11 @@ function BulkEnrichmentModal({ selectedCount, onEnrich, onClose, progress }: Bul
               <button
                 onClick={handleStart}
                 disabled={selectedFieldCount === 0}
-                className="flex-1 border-2 border-black bg-accent-purple text-white px-4 py-3 font-bold hover:bg-accent-blue transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`flex-1 border-2 border-black px-4 py-3 font-bold transition-colors ${
+                  selectedFieldCount === 0
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-accent-purple text-white hover:bg-accent-blue'
+                }`}
               >
                 START ENRICHMENT ({selectedFieldCount} field{selectedFieldCount !== 1 ? 's' : ''})
               </button>
