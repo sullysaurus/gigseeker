@@ -604,11 +604,15 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
             {loading ? (
               <p>Loading venues...</p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full border-2 border-black text-sm">
-                  <thead>
+              <>
+                <div className="mb-2 text-sm text-gray-600">
+                  Showing {sortedVenues.length} venue{sortedVenues.length !== 1 ? 's' : ''}
+                </div>
+                <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
+                <table className="w-full border-2 border-black text-xs">
+                  <thead className="sticky top-0 bg-black text-white z-10">
                     <tr className="bg-black text-white">
-                      <th className="border-2 border-black p-2 text-center whitespace-nowrap w-12">
+                      <th className="border-2 border-black p-2 text-center sticky left-0 bg-black z-20 w-10">
                         <input
                           type="checkbox"
                           onChange={(e) => e.target.checked ? selectAllVenues() : deselectAllVenues()}
@@ -617,7 +621,7 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
                         />
                       </th>
                       <th
-                        className="border-2 border-black p-2 text-left cursor-pointer hover:bg-gray-800 whitespace-nowrap"
+                        className="border-2 border-black p-2 text-left cursor-pointer hover:bg-gray-800 sticky left-10 bg-black z-20"
                         onClick={() => handleVenueSort('name')}
                       >
                         NAME {venueSortField === 'name' && (venueSortDirection === 'asc' ? '↑' : '↓')}
@@ -657,7 +661,7 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
                   <tbody>
                     {sortedVenues.map((v) => (
                       <tr key={v.id} className={`${selectedVenues[v.id] ? 'bg-accent-yellow' : 'hover:bg-gray-50'}`}>
-                        <td className="border-2 border-black p-2 text-center">
+                        <td className={`border-2 border-black p-1 text-center sticky left-0 z-10 ${selectedVenues[v.id] ? 'bg-accent-yellow' : 'bg-white'}`}>
                           <input
                             type="checkbox"
                             checked={selectedVenues[v.id] || false}
@@ -665,57 +669,60 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
                             className="w-4 h-4"
                           />
                         </td>
-                        <td className="border-2 border-black p-2 font-bold whitespace-nowrap">{v.name}</td>
-                        <td className="border-2 border-black p-2 whitespace-nowrap">{v.city}</td>
-                        <td className="border-2 border-black p-2 whitespace-nowrap">{v.state}</td>
-                        <td className="border-2 border-black p-2 text-xs max-w-xs truncate" title={v.email}>{v.email}</td>
-                        <td className="border-2 border-black p-2 whitespace-nowrap">{v.phone || '-'}</td>
-                        <td className="border-2 border-black p-2 text-xs max-w-xs truncate" title={v.website || ''}>
+                        <td className={`border-2 border-black p-1 font-bold whitespace-nowrap sticky left-10 z-10 max-w-[200px] truncate ${selectedVenues[v.id] ? 'bg-accent-yellow' : 'bg-white'}`} title={v.name}>{v.name}</td>
+                        <td className="border-2 border-black p-1 whitespace-nowrap">{v.city}</td>
+                        <td className="border-2 border-black p-1 whitespace-nowrap">{v.state}</td>
+                        <td className="border-2 border-black p-1 text-xs max-w-[150px] truncate" title={v.email}>{v.email}</td>
+                        <td className="border-2 border-black p-1 text-xs whitespace-nowrap">{v.phone || '-'}</td>
+                        <td className="border-2 border-black p-1 text-xs max-w-[150px] truncate" title={v.website || ''}>
                           {v.website ? (
                             <a href={v.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                              {v.website.replace(/^https?:\/\//i, '')}
+                              {v.website.replace(/^https?:\/\//i, '').substring(0, 20)}...
                             </a>
                           ) : '-'}
                         </td>
-                        <td className="border-2 border-black p-2 text-center">{v.capacity || '-'}</td>
-                        <td className="border-2 border-black p-2 whitespace-nowrap">
+                        <td className="border-2 border-black p-1 text-center text-xs">{v.capacity || '-'}</td>
+                        <td className="border-2 border-black p-1 text-xs whitespace-nowrap">
                           {v.venue_type || '-'}
                         </td>
-                        <td className="border-2 border-black p-2 max-w-xs">
+                        <td className="border-2 border-black p-1 max-w-[120px]">
                           <div className="flex flex-wrap gap-1">
-                            {v.music_focus?.slice(0, 3).map((g, i) => (
+                            {v.music_focus?.slice(0, 2).map((g, i) => (
                               <span key={i} className="text-xs px-1 py-0.5 bg-gray-200 border border-gray-400 whitespace-nowrap">
                                 {g}
                               </span>
                             ))}
-                            {v.music_focus?.length > 3 && (
-                              <span className="text-xs text-gray-500">+{v.music_focus.length - 3}</span>
+                            {v.music_focus?.length > 2 && (
+                              <span className="text-xs text-gray-500">+{v.music_focus.length - 2}</span>
                             )}
                           </div>
                         </td>
-                        <td className="border-2 border-black p-2 whitespace-nowrap text-xs">
+                        <td className="border-2 border-black p-1 whitespace-nowrap text-xs">
                           {new Date(v.created_at).toLocaleDateString()}
                         </td>
-                        <td className="border-2 border-black p-2">
-                          <div className="flex gap-2">
+                        <td className="border-2 border-black p-1">
+                          <div className="flex gap-1 flex-wrap">
                             <button
                               onClick={() => handleEnrichVenue(v.id)}
                               disabled={enrichingVenueId === v.id}
-                              className="border-2 border-black bg-accent-yellow text-black px-3 py-1 font-bold text-sm hover:bg-accent-purple hover:text-white transition-colors disabled:opacity-50"
+                              className="border border-black bg-accent-yellow text-black px-2 py-0.5 font-bold text-xs hover:bg-accent-purple hover:text-white transition-colors disabled:opacity-50"
+                              title="Enrich venue data"
                             >
-                              {enrichingVenueId === v.id ? '...' : '✨ ENRICH'}
+                              {enrichingVenueId === v.id ? '...' : '✨'}
                             </button>
                             <button
                               onClick={() => setEditingVenue(v)}
-                              className="border-2 border-black bg-accent-blue text-white px-3 py-1 font-bold text-sm hover:bg-accent-purple transition-colors"
+                              className="border border-black bg-accent-blue text-white px-2 py-0.5 font-bold text-xs hover:bg-accent-purple transition-colors"
+                              title="Edit venue"
                             >
                               EDIT
                             </button>
                             <button
                               onClick={() => deleteVenue(v.id)}
-                              className="border-2 border-black bg-red-500 text-white px-3 py-1 font-bold text-sm hover:bg-red-600 transition-colors"
+                              className="border border-black bg-red-500 text-white px-2 py-0.5 font-bold text-xs hover:bg-red-600 transition-colors"
+                              title="Delete venue"
                             >
-                              DELETE
+                              DEL
                             </button>
                           </div>
                         </td>
@@ -723,7 +730,8 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
                     ))}
                   </tbody>
                 </table>
-              </div>
+                </div>
+              </>
             )}
 
             {/* Create/Edit Venue Modal */}
