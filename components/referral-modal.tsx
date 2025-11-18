@@ -87,7 +87,7 @@ export function ReferralModal({ isOpen, onClose, userId }: ReferralModalProps) {
               ×
             </button>
           </div>
-          <p className="mt-2 font-bold">Get 50 AI credits for each friend who signs up!</p>
+          <p className="mt-2 font-bold">Get 7 days of Pro for each friend who signs up!</p>
         </div>
 
         {/* Content */}
@@ -154,9 +154,9 @@ export function ReferralModal({ isOpen, onClose, userId }: ReferralModalProps) {
                   </div>
                   <div className="border-3 border-black p-4 bg-accent-yellow">
                     <div className="text-4xl font-black">
-                      {stats.total_credits_earned}
+                      {stats.completed_referrals * 7}
                     </div>
-                    <div className="font-bold text-sm mt-1">CREDITS EARNED</div>
+                    <div className="font-bold text-sm mt-1">PRO DAYS EARNED</div>
                   </div>
                 </div>
               )}
@@ -175,11 +175,11 @@ export function ReferralModal({ isOpen, onClose, userId }: ReferralModalProps) {
                   </li>
                   <li className="flex gap-2">
                     <span className="text-accent-blue">3.</span>
-                    <span>You get <strong>50 AI credits</strong> when they complete signup</span>
+                    <span>You get <strong>7 days of Pro</strong> when they complete signup</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-accent-blue">4.</span>
-                    <span>No limit on referrals - invite unlimited friends!</span>
+                    <span>Stack unlimited days - invite more friends for more Pro time!</span>
                   </li>
                 </ol>
               </div>
