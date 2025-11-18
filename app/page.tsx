@@ -377,7 +377,7 @@ export default function Home() {
             HOW IT WORKS
           </h2>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {[
               { step: '1', title: 'SEARCH VENUES', desc: 'Pre-verified venues with booking contacts ready to go' },
               { step: '2', title: 'ADD TO PIPELINE', desc: 'Organize venues by status and priority' },

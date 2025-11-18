@@ -132,8 +132,8 @@ export default function AccountPage() {
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Header */}
           <div>
-            <h1 className="text-4xl font-black mb-2">ACCOUNT SETTINGS</h1>
-            <p className="text-lg font-bold text-gray-600">{user?.email}</p>
+            <h1 className="text-3xl md:text-4xl font-black mb-2">ACCOUNT SETTINGS</h1>
+            <p className="text-base md:text-lg font-bold text-gray-600 break-all">{user?.email}</p>
           </div>
 
           {/* Subscription Card */}
@@ -207,9 +207,9 @@ export default function AccountPage() {
               </div>
               <div className="p-6">
                 <p className="font-bold mb-4">
-                  Invite friends and earn 50 AI credits for each completed signup!
+                  Invite friends and earn 7 days of Pro for each completed signup!
                 </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   <div className="border-2 border-black p-4">
                     <div className="text-3xl font-black text-accent-blue">
                       {referralStats.total_referrals}
@@ -230,9 +230,9 @@ export default function AccountPage() {
                   </div>
                   <div className="border-2 border-black p-4 bg-accent-yellow">
                     <div className="text-3xl font-black">
-                      {referralStats.total_credits_earned}
+                      {referralStats.completed_referrals * 7}
                     </div>
-                    <div className="font-bold text-sm">CREDITS EARNED</div>
+                    <div className="font-bold text-sm">PRO DAYS EARNED</div>
                   </div>
                 </div>
                 <div className="border-2 border-black p-4 bg-gray-50">

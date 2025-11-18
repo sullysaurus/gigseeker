@@ -159,8 +159,8 @@ export default function HistoryPage() {
           {/* Header */}
           <div className="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
-              <h1 className="text-4xl md:text-5xl font-black mb-2">VENUE HISTORY</h1>
-              <p className="text-gray-600">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-2">VENUE HISTORY</h1>
+              <p className="text-sm sm:text-base text-gray-600">
                 View archived and declined venues from past outreach
               </p>
             </div>
@@ -205,7 +205,7 @@ export default function HistoryPage() {
           </div>
 
           {/* Stats */}
-          <div className="mb-8 grid grid-cols-3 gap-4">
+          <div className="mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="card bg-white">
               <div className="text-3xl font-black mb-1">{venues.length}</div>
               <div className="text-sm font-bold text-gray-600">Total in History</div>
