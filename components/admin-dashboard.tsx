@@ -55,6 +55,11 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
   const [showEnrichmentReview, setShowEnrichmentReview] = useState(false)
   const [currentVenueData, setCurrentVenueData] = useState<any>(null)
 
+  // Bulk enrichment state
+  const [selectedVenues, setSelectedVenues] = useState<{ [id: string]: boolean }>({})
+  const [showBulkEnrichModal, setShowBulkEnrichModal] = useState(false)
+  const [bulkEnrichmentProgress, setBulkEnrichmentProgress] = useState<{ total: number; completed: number; results: any[] } | null>(null)
+
   // Discovery state
   const [showDiscoverVenues, setShowDiscoverVenues] = useState(false)
   const [discoveryCity, setDiscoveryCity] = useState('')
@@ -338,6 +343,80 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
     }
   }
 
+  // Toggle venue selection
+  const toggleVenueSelection = (venueId: string) => {
+    setSelectedVenues(prev => ({
+      ...prev,
+      [venueId]: !prev[venueId]
+    }))
+  }
+
+  // Select/deselect all venues
+  const selectAllVenues = () => {
+    const allSelected: { [id: string]: boolean } = {}
+    sortedVenues.forEach(v => {
+      allSelected[v.id] = true
+    })
+    setSelectedVenues(allSelected)
+  }
+
+  const deselectAllVenues = () => {
+    setSelectedVenues({})
+  }
+
+  // Handle bulk enrichment
+  const handleBulkEnrich = async (fields: string[]) => {
+    const venueIds: string[] = Object.keys(selectedVenues).filter(id => selectedVenues[id])
+
+    if (venueIds.length === 0 || fields.length === 0) {
+      toast.error('Please select venues and fields')
+      return
+    }
+
+    setBulkEnrichmentProgress({ total: venueIds.length, completed: 0, results: [] })
+
+    try {
+      const results: { venueId: string; success: boolean; data?: any; error?: any }[] = []
+      for (let i = 0; i < venueIds.length; i++) {
+        const venueId = venueIds[i]!
+
+        try {
+          const response = await fetch('/api/admin/enrich-venue-bulk', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ venueId, fields }),
+          })
+
+          const data = await response.json()
+          results.push({ venueId, success: response.ok, data })
+
+          setBulkEnrichmentProgress(prev => prev ? {
+            ...prev,
+            completed: i + 1,
+            results
+          } : null)
+        } catch (error) {
+          results.push({ venueId, success: false, error })
+        }
+      }
+
+      // Reload venues to show updated data
+      await loadVenues()
+
+      const successCount = results.filter(r => r.success).length
+      toast.success(`Enriched ${successCount}/${venueIds.length} venues successfully!`)
+
+      setShowBulkEnrichModal(false)
+      setSelectedVenues({})
+      setBulkEnrichmentProgress(null)
+    } catch (error) {
+      toast.error('Bulk enrichment failed')
+      setBulkEnrichmentProgress(null)
+    }
+  }
+
+  const selectedVenueCount = Object.values(selectedVenues).filter(Boolean).length
+
   return (
     <div className="min-h-screen bg-accent-yellow">
       <Navigation
@@ -501,6 +580,27 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
               </div>
             </div>
 
+            {/* Bulk Selection Controls */}
+            {selectedVenueCount > 0 && (
+              <div className="mb-4 p-4 border-2 border-black bg-accent-yellow flex items-center justify-between">
+                <div>
+                  <span className="font-bold">{selectedVenueCount} venue(s) selected</span>
+                  <button
+                    onClick={deselectAllVenues}
+                    className="ml-4 text-sm underline hover:no-underline"
+                  >
+                    Deselect All
+                  </button>
+                </div>
+                <button
+                  onClick={() => setShowBulkEnrichModal(true)}
+                  className="border-2 border-black bg-accent-purple text-white px-4 py-2 font-bold hover:bg-accent-blue transition-colors"
+                >
+                  ✨ BULK ENRICH ({selectedVenueCount})
+                </button>
+              </div>
+            )}
+
             {loading ? (
               <p>Loading venues...</p>
             ) : (
@@ -508,6 +608,14 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
                 <table className="w-full border-2 border-black text-sm">
                   <thead>
                     <tr className="bg-black text-white">
+                      <th className="border-2 border-black p-2 text-center whitespace-nowrap w-12">
+                        <input
+                          type="checkbox"
+                          onChange={(e) => e.target.checked ? selectAllVenues() : deselectAllVenues()}
+                          checked={sortedVenues.length > 0 && sortedVenues.every(v => selectedVenues[v.id])}
+                          className="w-4 h-4"
+                        />
+                      </th>
                       <th
                         className="border-2 border-black p-2 text-left cursor-pointer hover:bg-gray-800 whitespace-nowrap"
                         onClick={() => handleVenueSort('name')}
@@ -548,7 +656,15 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
                   </thead>
                   <tbody>
                     {sortedVenues.map((v) => (
-                      <tr key={v.id} className="hover:bg-accent-yellow">
+                      <tr key={v.id} className={`${selectedVenues[v.id] ? 'bg-accent-yellow' : 'hover:bg-gray-50'}`}>
+                        <td className="border-2 border-black p-2 text-center">
+                          <input
+                            type="checkbox"
+                            checked={selectedVenues[v.id] || false}
+                            onChange={() => toggleVenueSelection(v.id)}
+                            className="w-4 h-4"
+                          />
+                        </td>
                         <td className="border-2 border-black p-2 font-bold whitespace-nowrap">{v.name}</td>
                         <td className="border-2 border-black p-2 whitespace-nowrap">{v.city}</td>
                         <td className="border-2 border-black p-2 whitespace-nowrap">{v.state}</td>
@@ -661,6 +777,16 @@ export function AdminDashboard({ user, profile }: AdminDashboardProps) {
               setDiscoveryCity('')
               setDiscoveryState('NC')
             }}
+          />
+        )}
+
+        {/* Bulk Enrichment Modal */}
+        {showBulkEnrichModal && (
+          <BulkEnrichmentModal
+            selectedCount={selectedVenueCount}
+            onEnrich={handleBulkEnrich}
+            onClose={() => setShowBulkEnrichModal(false)}
+            progress={bulkEnrichmentProgress}
           />
         )}
       </div>
@@ -1110,6 +1236,165 @@ function DiscoveryModal({
         >
           CLOSE
         </button>
+      </div>
+    </div>
+  )
+}
+
+// Bulk Enrichment Modal Component
+interface BulkEnrichmentModalProps {
+  selectedCount: number
+  onEnrich: (fields: string[]) => void
+  onClose: () => void
+  progress: { total: number; completed: number; results: any[] } | null
+}
+
+function BulkEnrichmentModal({ selectedCount, onEnrich, onClose, progress }: BulkEnrichmentModalProps) {
+  const [selectedFields, setSelectedFields] = useState<{ [key: string]: boolean }>({})
+
+  const availableFields = [
+    { key: 'email', label: 'Email' },
+    { key: 'phone', label: 'Phone' },
+    { key: 'website', label: 'Website' },
+    { key: 'address', label: 'Address' },
+    { key: 'zip_code', label: 'Zip Code' },
+    { key: 'capacity', label: 'Capacity' },
+    { key: 'venue_type', label: 'Venue Type' },
+    { key: 'music_focus', label: 'Music Focus/Genres' },
+    { key: 'description', label: 'Description' },
+    { key: 'instagram_handle', label: 'Instagram' },
+    { key: 'facebook_url', label: 'Facebook' },
+  ]
+
+  const toggleField = (field: string) => {
+    setSelectedFields(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }))
+  }
+
+  const selectAll = () => {
+    const allSelected: { [key: string]: boolean } = {}
+    availableFields.forEach(f => {
+      allSelected[f.key] = true
+    })
+    setSelectedFields(allSelected)
+  }
+
+  const deselectAll = () => {
+    setSelectedFields({})
+  }
+
+  const handleStart = () => {
+    const fields = Object.keys(selectedFields).filter(key => selectedFields[key])
+    if (fields.length === 0) {
+      return
+    }
+    onEnrich(fields)
+  }
+
+  const selectedFieldCount = Object.values(selectedFields).filter(Boolean).length
+  const isEnriching = progress !== null
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white border-3 border-black p-6 max-w-2xl w-full shadow-brutalist my-8">
+        <h3 className="text-2xl font-black mb-4">✨ BULK ENRICHMENT</h3>
+        <p className="text-sm mb-6 text-gray-600">
+          Select which fields to enrich for {selectedCount} selected venue(s). Claude will search the web to find missing information.
+        </p>
+
+        {!isEnriching ? (
+          <>
+            {/* Field Selection */}
+            <div className="border-2 border-black p-4 mb-4">
+              <div className="flex justify-between items-center mb-3">
+                <h4 className="font-bold">SELECT FIELDS TO ENRICH:</h4>
+                <div className="flex gap-2">
+                  <button
+                    onClick={selectAll}
+                    className="text-sm border-2 border-black px-3 py-1 hover:bg-gray-100"
+                  >
+                    SELECT ALL
+                  </button>
+                  <button
+                    onClick={deselectAll}
+                    className="text-sm border-2 border-black px-3 py-1 hover:bg-gray-100"
+                  >
+                    DESELECT ALL
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                {availableFields.map(field => (
+                  <label key={field.key} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 border border-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={selectedFields[field.key] || false}
+                      onChange={() => toggleField(field.key)}
+                      className="w-4 h-4"
+                    />
+                    <span className="font-bold text-sm">{field.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2">
+              <button
+                onClick={handleStart}
+                disabled={selectedFieldCount === 0}
+                className="flex-1 border-2 border-black bg-accent-purple text-white px-4 py-3 font-bold hover:bg-accent-blue transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                START ENRICHMENT ({selectedFieldCount} field{selectedFieldCount !== 1 ? 's' : ''})
+              </button>
+              <button
+                onClick={onClose}
+                className="border-2 border-black bg-white px-6 py-3 font-bold hover:bg-black hover:text-white transition-colors"
+              >
+                CANCEL
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Progress Bar */}
+            <div className="border-2 border-black p-4 mb-4">
+              <div className="mb-2 flex justify-between items-center">
+                <span className="font-bold">ENRICHING VENUES...</span>
+                <span className="font-mono">{progress.completed} / {progress.total}</span>
+              </div>
+              <div className="w-full h-8 border-2 border-black bg-white">
+                <div
+                  className="h-full bg-accent-purple transition-all duration-300"
+                  style={{ width: `${(progress.completed / progress.total) * 100}%` }}
+                />
+              </div>
+              <p className="text-sm text-gray-600 mt-2">
+                Please wait while we enrich your venues. This may take a few moments.
+              </p>
+            </div>
+
+            {/* Results Summary */}
+            {progress.results.length > 0 && (
+              <div className="border-2 border-black p-4 max-h-64 overflow-y-auto">
+                <h4 className="font-bold mb-2">RESULTS:</h4>
+                <div className="space-y-1 text-sm">
+                  {progress.results.map((result, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <span>{result.success ? '✓' : '✗'}</span>
+                      <span className={result.success ? 'text-green-600' : 'text-red-600'}>
+                        Venue {i + 1}: {result.success ? 'Enriched' : 'Failed'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   )
