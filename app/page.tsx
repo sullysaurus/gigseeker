@@ -49,7 +49,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-white via-gray-50 to-white">
-        <div className="absolute inset-0 bg-grid opacity-50"></div>
+        <div className="absolute inset-0 bg-grid opacity-50 pointer-events-none"></div>
 
         <div className="relative max-w-6xl mx-auto px-4 py-20 md:py-32">
           <div className="text-center mb-12 animate-slide-up">
